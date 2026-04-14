@@ -10,14 +10,24 @@ import {
   RotateCcw,
   Wrench,
   ClipboardList,
+  User,
   Menu,
   X,
   HardHat,
+} from "lucide-react";
+  Package,
+  FilePlus,
+  RotateCcw,
+  Wrench,
+  ClipboardList,
+  Menu,
+  X,
 } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/estoque", label: "Estoque", icon: Package },
+  { href: "/clientes", label: "Clientes", icon: User },
   { href: "/nova-locacao", label: "Nova Locação", icon: FilePlus },
   { href: "/devolucoes", label: "Devoluções", icon: RotateCcw },
   { href: "/manutencao", label: "Manutenção", icon: Wrench },
