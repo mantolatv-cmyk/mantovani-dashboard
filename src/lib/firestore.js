@@ -326,3 +326,34 @@ export async function addNotaFiscal(data) {
 export async function deleteNotaFiscal(id) {
   await deleteDoc(doc(db, "notas_fiscais", id));
 }
+/**
+ * LIMPEZA TOTAL (Reset do sistema para dados reais)
+ */
+export async function wipeAllData() {
+  // 1. Limpa todas as locações
+  const rentals = await getDocs(locacoesRef);
+  for (const docSnap of rentals.docs) {
+    await deleteDoc(doc(db, "locacoes", docSnap.id));
+  }
+
+  // 2. Limpa todas as notas fiscais
+  const notas = await getDocs(notasFiscaisRef);
+  for (const docSnap of notas.docs) {
+    await deleteDoc(doc(db, "notas_fiscais", docSnap.id));
+  }
+
+  // 3. Limpa todas as manutenções
+  const manut = await getDocs(collection(db, "manutencoes"));
+  for (const docSnap of manut.docs) {
+    await deleteDoc(doc(db, "manutencoes", docSnap.id));
+  }
+
+  // 4. Restaura estoque disponível para o valor total em todos os equipamentos
+  const equips = await getDocs(equipamentosRef);
+  for (const docSnap of equips.docs) {
+    const data = docSnap.data();
+    await updateDoc(doc(db, "equipamentos", docSnap.id), {
+      disponivel: Number(data.totalComprado) || 0,
+    });
+  }
+}

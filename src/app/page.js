@@ -28,6 +28,20 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      <button
+        onClick={async () => {
+          if (confirm("Deseja realmente limpar TODO o histórico de locações e notas?")) {
+            const { wipeAllData } = await import("@/lib/firestore");
+            await wipeAllData();
+            window.location.reload();
+          }
+        }}
+        id="btn-wipe-data-temporary"
+        className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs font-bold uppercase tracking-wider transition-all active:scale-95"
+      >
+        Limpar Histórico e Resetar Sistema
+      </button>
+
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
