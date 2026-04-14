@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   HardHat,
+  Receipt,
 } from "lucide-react";
 
 const navItems = [
@@ -24,6 +25,7 @@ const navItems = [
   { href: "/devolucoes", label: "Devoluções", icon: RotateCcw },
   { href: "/manutencao", label: "Manutenção", icon: Wrench },
   { href: "/historico", label: "Histórico", icon: ClipboardList },
+  { href: "/notas-fiscais", label: "Notas Fiscais", icon: Receipt },
 ];
 
 export default function Sidebar() {

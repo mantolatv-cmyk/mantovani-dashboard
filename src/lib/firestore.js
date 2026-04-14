@@ -296,3 +296,32 @@ export async function writeOffEquipment(maintenanceId) {
     transaction.delete(mainRef);
   });
 }
+
+// ========================
+// NOTAS FISCAIS
+// ========================
+
+const notasFiscaisRef = collection(db, "notas_fiscais");
+
+export async function getNotasFiscais() {
+  const q = query(notasFiscaisRef, orderBy("criadoEm", "desc"));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+}
+
+export async function addNotaFiscal(data) {
+  const docRef = await addDoc(notasFiscaisRef, {
+    clienteNome: data.clienteNome,
+    clienteCpf: data.clienteCpf || "",
+    numeroNota: data.numeroNota,
+    valor: Number(data.valor) || 0,
+    dataEmissao: data.dataEmissao,
+    arquivoUrl: data.arquivoUrl || "",
+    criadoEm: serverTimestamp(),
+  });
+  return docRef.id;
+}
+
+export async function deleteNotaFiscal(id) {
+  await deleteDoc(doc(db, "notas_fiscais", id));
+}
