@@ -132,13 +132,8 @@ export default function RentalForm() {
       try {
         const pdfBlob = await generateContractPDF(rentalData);
 
-        // 3. Faz upload do contrato para o Storage
-        const contractUrl = await uploadContract(form.clienteNome, pdfBlob);
-
-        // 4. Atualiza a URL do contrato na locação
-        await updateRentalContractUrl(rentalId, contractUrl);
-
-        // 5. Download do PDF para o operador
+        // 3. Download do PDF para o operador PRIMEIRO
+        // Assim, se o Firebase Storage não estiver ativado ou travar, o usuário já tem o contrato!
         const url = URL.createObjectURL(pdfBlob);
         const a = document.createElement("a");
         a.href = url;
@@ -147,8 +142,23 @@ export default function RentalForm() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        
+        addToast("Contrato gerado com sucesso! Iniciando salvamento na nuvem...", "success");
 
-        addToast("Contrato gerado e salvo com sucesso!", "success");
+        // 4. Faz upload do contrato para o Storage (Com timeout de 8 segundos para evitar hang)
+        try {
+          const contractUrl = await Promise.race([
+            uploadContract(form.clienteNome, pdfBlob),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout_Upload")), 8000))
+          ]);
+          // 5. Atualiza a URL do contrato na locação
+          await updateRentalContractUrl(rentalId, contractUrl);
+          addToast("Contrato salvo na nuvem com sucesso!", "success");
+        } catch (uploadError) {
+          console.warn("Storage upload error/timeout:", uploadError);
+          // Falha silenciosa ou apenas avisa (Pois o PDF local já foi baixado)
+          addToast("O contrato não foi salvo na nuvem (Storage desativado ou timeout).", "info");
+        }
       } catch (pdfError) {
         console.error("Erro ao gerar/salvar PDF:", pdfError);
         addToast(

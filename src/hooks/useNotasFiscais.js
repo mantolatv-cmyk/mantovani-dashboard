@@ -48,7 +48,15 @@ export function useNotasFiscais() {
 
       let arquivoUrl = "";
       if (fileBlob) {
-        arquivoUrl = await uploadNotaFiscal(data.clienteNome, fileBlob);
+        try {
+          arquivoUrl = await Promise.race([
+            uploadNotaFiscal(data.clienteNome, fileBlob),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout_Upload")), 8000))
+          ]);
+        } catch (uploadObjErr) {
+          console.warn("Storage upload error/timeout nas notas:", uploadObjErr);
+          // Permite que continue para gravar o registro no banco mesmo sem o arquivo na nuvem
+        }
       }
       
       const newNotaData = { ...data, arquivoUrl };
