@@ -1,65 +1,79 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Package, PackageCheck, FileText, TrendingUp } from "lucide-react";
+import StatCard from "@/components/StatCard";
+import RecentRentals from "@/components/RecentRentals";
+import { useEquipments } from "@/hooks/useEquipments";
+import { useRentals } from "@/hooks/useRentals";
+
+export default function DashboardPage() {
+  const { equipments, loading: loadingEq } = useEquipments();
+  const { rentals: activeRentals, loading: loadingActive } = useRentals("ativa");
+  const { rentals: recentRentals, loading: loadingRecent } = useRentals(null, 5);
+
+  // Cálculos do dashboard
+  const totalComprado = equipments.reduce((sum, eq) => sum + (eq.totalComprado || 0), 0);
+  const totalDisponivel = equipments.reduce((sum, eq) => sum + (eq.disponivel || 0), 0);
+  const totalAlugado = totalComprado - totalDisponivel;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="page-enter space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-white tracking-tight" id="page-title">
+          Dashboard
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Visão geral das operações — Mantovani Locações
+        </p>
+      </div>
+
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          icon={TrendingUp}
+          title="Em Locação"
+          value={loadingEq ? "..." : totalAlugado}
+          subtitle="equipamentos alugados"
+          color="blue"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+        <StatCard
+          icon={PackageCheck}
+          title="Em Estoque"
+          value={loadingEq ? "..." : totalDisponivel}
+          subtitle="disponíveis para locação"
+          color="green"
+        />
+        <StatCard
+          icon={FileText}
+          title="Locações Ativas"
+          value={loadingActive ? "..." : activeRentals.length}
+          subtitle="contratos em aberto"
+          color="amber"
+        />
+        <StatCard
+          icon={Package}
+          title="Total de Equipamentos"
+          value={loadingEq ? "..." : equipments.length}
+          subtitle="tipos cadastrados"
+          color="violet"
+        />
+      </div>
+
+      {/* Recent Rentals */}
+      <div className="rounded-2xl bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800/50">
+          <div>
+            <h2 className="text-base font-semibold text-white">
+              Locações Recentes
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Últimas 5 movimentações
+            </p>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        <RecentRentals rentals={recentRentals} loading={loadingRecent} />
+      </div>
     </div>
   );
 }
