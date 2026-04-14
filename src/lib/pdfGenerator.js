@@ -1,5 +1,4 @@
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
+// Imports dinâmicos usados dentro da função para segurança no App Router
 
 /**
  * Formata data ISO para formato brasileiro dd/mm/aaaa
@@ -43,13 +42,23 @@ function formatCurrency(value) {
  */
 export function generateContractPDF(data) {
   return Promise.race([
-    new Promise((resolve, reject) => {
+    new Promise(async (resolve, reject) => {
       try {
-        if (typeof window !== "undefined") {
-           const vfs = pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfFonts;
-           pdfMake.vfs = vfs;
-        } else {
+        if (typeof window === "undefined") {
            return reject(new Error("PDFs só podem ser gerados no client-side"));
+        }
+
+        // Import dinâmico resolve 99% dos problemas de freeze no Next.js App Router
+        const pdfMakeModule = await import("pdfmake/build/pdfmake");
+        const pdfFontsModule = await import("pdfmake/build/vfs_fonts");
+        
+        const pdfMake = pdfMakeModule.default || pdfMakeModule;
+        const pdfFonts = pdfFontsModule.default || pdfFontsModule;
+        
+        pdfMake.vfs = pdfFonts?.pdfMake?.vfs || pdfFonts?.vfs || window.pdfMake?.vfs;
+
+        if (!pdfMake.vfs) {
+           console.warn("VFS de fontes não carregou perfeitamente. PDF pode não renderizar textos.");
         }
 
       const docDefinition = {
