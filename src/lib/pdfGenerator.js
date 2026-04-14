@@ -78,20 +78,7 @@ export function generateContractPDF(data) {
             alignment: "center",
             margin: [0, 0, 0, 8],
           },
-          {
-            canvas: [
-              {
-                type: "line",
-                x1: 0,
-                y1: 0,
-                x2: 495,
-                y2: 0,
-                lineWidth: 2,
-                lineColor: "#1e40af",
-              },
-            ],
-            margin: [0, 0, 0, 20],
-          },
+/* Linha removida para simplificar template */
           {
             text: "CONTRATO DE LOCAÇÃO DE EQUIPAMENTOS",
             style: "title",
@@ -303,19 +290,10 @@ export function generateContractPDF(data) {
             columns: [
               {
                 width: "*",
+              {
+                width: "*",
                 stack: [
-                  {
-                    canvas: [
-                      {
-                        type: "line",
-                        x1: 0,
-                        y1: 0,
-                        x2: 200,
-                        y2: 0,
-                        lineWidth: 1,
-                      },
-                    ],
-                  },
+                  { text: "________________________________________", margin: [0, 20, 0, 0] },
                   {
                     text: "MANTOVANI",
                     style: "signatureName",
@@ -328,18 +306,10 @@ export function generateContractPDF(data) {
               {
                 width: "*",
                 stack: [
-                  {
-                    canvas: [
-                      {
-                        type: "line",
-                        x1: 0,
-                        y1: 0,
-                        x2: 200,
-                        y2: 0,
-                        lineWidth: 1,
-                      },
-                    ],
-                  },
+              {
+                width: "*",
+                stack: [
+                   { text: "________________________________________", margin: [0, 20, 0, 0] },
                   {
                     text: data.clienteNome || "LOCATÁRIO(A)",
                     style: "signatureName",
@@ -410,6 +380,6 @@ export function generateContractPDF(data) {
       reject(error);
     }
   }),
-  new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout pdfMake")), 5000))
+  new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout pdfMake")), 15000))
   ]);
 }
