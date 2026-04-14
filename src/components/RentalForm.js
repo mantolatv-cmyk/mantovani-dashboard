@@ -130,10 +130,13 @@ export default function RentalForm() {
 
       // 2. Gera o PDF do contrato
       try {
-        const pdfBlob = await generateContractPDF(rentalData);
+        // Timeout de 30s para geração do PDF (Bundle pesado / conexões lentas)
+        const pdfBlob = await Promise.race([
+          generateContractPDF(rentalData),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout ao carregar gerador de PDF (30s)")), 30000))
+        ]);
 
         // 3. Download do PDF para o operador PRIMEIRO
-        // Assim, se o Firebase Storage não estiver ativado ou travar, o usuário já tem o contrato!
         const url = URL.createObjectURL(pdfBlob);
         const a = document.createElement("a");
         a.href = url;
@@ -143,26 +146,22 @@ export default function RentalForm() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        addToast("Contrato gerado com sucesso! Iniciando salvamento na nuvem...", "success");
+        addToast("Contrato gerado com sucesso!", "success");
 
-        // 4. Faz upload do contrato para o Storage (Com timeout de 8 segundos para evitar hang)
+        // 4. Faz upload do contrato para o Storage (Timeout de 10s)
         try {
           const contractUrl = await Promise.race([
             uploadContract(form.clienteNome, pdfBlob),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout_Upload")), 8000))
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout_Upload")), 10000))
           ]);
-          // 5. Atualiza a URL do contrato na locação
           await updateRentalContractUrl(rentalId, contractUrl);
-          addToast("Contrato salvo na nuvem com sucesso!", "success");
         } catch (uploadError) {
-          console.warn("Storage upload error/timeout:", uploadError);
-          // Falha silenciosa ou apenas avisa (Pois o PDF local já foi baixado)
-          addToast("O contrato não foi salvo na nuvem (Storage desativado ou timeout).", "info");
+          console.warn("Storage upload skip:", uploadError.message);
         }
       } catch (pdfError) {
-        console.error("Erro ao gerar/salvar PDF:", pdfError);
+        console.error("ERRO_DETALHADO_PDF:", pdfError);
         addToast(
-          "Locação criada, mas houve um erro ao gerar o contrato. Tente novamente.",
+          `Locação criada, mas o PDF falhou: ${pdfError.message}`,
           "error"
         );
       }

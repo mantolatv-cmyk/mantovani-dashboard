@@ -10,11 +10,49 @@ import {
   Search,
   Filter,
   History,
+  FileText,
+  Loader2,
 } from "lucide-react";
+import { useToast } from "@/components/Toast";
+import { generateContractPDF } from "@/lib/pdfGenerator";
 
 export default function HistoryList({ history, loading }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("todos"); // "todos" | "entrega" | "devolucao"
+  const [regeneratingId, setRegeneratingId] = useState(null);
+  const { addToast } = useToast();
+
+  async function handleRegeneratePDF(entry) {
+    if (!entry.rawData) {
+      addToast("Dados incompletos para gerar contrato.", "error");
+      return;
+    }
+
+    setRegeneratingId(entry.id);
+    try {
+      // 30s timeout safety
+      const pdfBlob = await Promise.race([
+        generateContractPDF(entry.rawData),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout (30s)")), 30000))
+      ]);
+
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `contrato_${entry.clienteNome.replace(/\s+/g, "_").toLowerCase()}_copia.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      addToast("Contrato (2ª via) gerado com sucesso!", "success");
+    } catch (err) {
+      console.error("Erro ao re-gerar PDF:", err);
+      addToast(`Erro ao gerar contrato: ${err.message}`, "error");
+    } finally {
+      setRegeneratingId(null);
+    }
+  }
 
   function formatDate(dateStr) {
     if (!dateStr) return "—";
@@ -273,23 +311,47 @@ export default function HistoryList({ history, loading }) {
                         </div>
                       </div>
 
-                      {/* Quantity badge */}
-                      <div className="flex-shrink-0 text-right">
-                        <p className="text-[10px] text-slate-600 uppercase tracking-wider font-medium mb-0.5">
-                          Qtd
-                        </p>
-                        <span
-                          className={`
-                            inline-flex items-center justify-center w-9 h-9 rounded-xl text-sm font-bold
-                            ${
-                              isEntrega
-                                ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                                : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                            }
-                          `}
-                        >
-                          {entry.quantidade}
-                        </span>
+                      {/* Actions/Quantity */}
+                      <div className="flex-shrink-0 flex flex-col items-end gap-3">
+                        {isEntrega && (
+                          <button
+                            onClick={() => handleRegeneratePDF(entry)}
+                            disabled={regeneratingId === entry.id}
+                            className={`
+                              flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all
+                              ${regeneratingId === entry.id 
+                                ? "bg-slate-700 text-slate-500 cursor-not-allowed" 
+                                : "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 active:scale-95"
+                              }
+                            `}
+                            title="Gerar Contrato (2ª Via)"
+                          >
+                            {regeneratingId === entry.id ? (
+                              <Loader2 size={12} className="animate-spin" />
+                            ) : (
+                              <FileText size={12} />
+                            )}
+                            {regeneratingId === entry.id ? "Gerando..." : "Contrato"}
+                          </button>
+                        )}
+                        
+                        <div className="text-right">
+                          <p className="text-[10px] text-slate-600 uppercase tracking-wider font-medium mb-0.5">
+                            Qtd
+                          </p>
+                          <span
+                            className={`
+                              inline-flex items-center justify-center w-9 h-9 rounded-xl text-sm font-bold
+                              ${
+                                isEntrega
+                                  ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                              }
+                            `}
+                          >
+                            {entry.quantidade}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );

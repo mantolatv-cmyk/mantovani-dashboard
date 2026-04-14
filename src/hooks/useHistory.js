@@ -48,6 +48,14 @@ export function useHistory() {
                 quantidade: data.quantidade || 1,
                 data: data.dataInicio || "",
                 locacaoId: doc.id,
+                rawData: {
+                  ...data,
+                  clienteNome: data.cliente?.nome,
+                  clienteCpf: data.cliente?.cpf,
+                  clienteEmail: data.cliente?.email,
+                  clienteTelefone: data.cliente?.telefone,
+                  clienteEndereco: data.cliente?.endereco,
+                }
               });
 
               // Devolução
@@ -65,6 +73,14 @@ export function useHistory() {
                   quantidade: data.quantidade || 1,
                   data: encerradoDate,
                   locacaoId: doc.id,
+                  rawData: {
+                    ...data,
+                    clienteNome: data.cliente?.nome,
+                    clienteCpf: data.cliente?.cpf,
+                    clienteEmail: data.cliente?.email,
+                    clienteTelefone: data.cliente?.telefone,
+                    clienteEndereco: data.cliente?.endereco,
+                  }
                 });
               }
             });
