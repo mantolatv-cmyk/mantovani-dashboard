@@ -263,6 +263,11 @@ export default function HistoryList({ history, loading }) {
                             <Package size={13} className="text-slate-500" />
                             <span className="text-sm text-slate-400">
                               {entry.equipamentoNome}
+                              {entry.numeroEquipamento && (
+                                <span className="text-xs text-slate-500 font-mono ml-2 px-1.5 py-0.5 rounded-md bg-slate-800/80 border border-slate-700/50">
+                                  #{entry.numeroEquipamento}
+                                </span>
+                              )}
                             </span>
                           </div>
                         </div>
