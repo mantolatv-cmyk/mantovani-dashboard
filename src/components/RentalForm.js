@@ -27,6 +27,7 @@ const initialForm = {
   clienteTelefone: "",
   clienteEndereco: "",
   equipamentoId: "",
+  numeroEquipamento: "",
   quantidade: 1,
   dataInicio: "",
   dataFim: "",
@@ -330,6 +331,28 @@ export default function RentalForm() {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Número do Equipamento/Unidade */}
+          <div className="md:col-span-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              Número da Unidade / Plaqueta
+            </label>
+            <div className="relative">
+              <Package
+                size={15}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+              />
+              <input
+                type="text"
+                name="numeroEquipamento"
+                value={form.numeroEquipamento}
+                onChange={handleChange}
+                placeholder="Ex: MK-1234 ou Série #45"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
+                id="unit-number-input"
+              />
+            </div>
           </div>
 
           {/* Quantidade */}

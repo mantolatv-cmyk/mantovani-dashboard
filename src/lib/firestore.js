@@ -117,6 +117,7 @@ export async function createRental(rentalData) {
       },
       equipamentoId: rentalData.equipamentoId,
       equipamentoNome: rentalData.equipamentoNome,
+      numeroEquipamento: rentalData.numeroEquipamento || "",
       quantidade: quantidade,
       dataInicio: rentalData.dataInicio,
       dataFim: rentalData.dataFim,

@@ -173,7 +173,7 @@ export function generateContractPDF(data) {
                 ],
                 [
                   {
-                    text: data.equipamentoNome || "—",
+                    text: `${data.equipamentoNome || "—"}${data.numeroEquipamento ? `\nUnidade/Série: ${data.numeroEquipamento}` : ""}`,
                     margin: [8, 6, 8, 6],
                   },
                   {
