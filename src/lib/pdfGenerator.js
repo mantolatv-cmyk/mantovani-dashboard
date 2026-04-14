@@ -290,8 +290,6 @@ export function generateContractPDF(data) {
             columns: [
               {
                 width: "*",
-              {
-                width: "*",
                 stack: [
                   { text: "________________________________________", margin: [0, 20, 0, 0] },
                   {
@@ -306,10 +304,7 @@ export function generateContractPDF(data) {
               {
                 width: "*",
                 stack: [
-              {
-                width: "*",
-                stack: [
-                   { text: "________________________________________", margin: [0, 20, 0, 0] },
+                  { text: "________________________________________", margin: [0, 20, 0, 0] },
                   {
                     text: data.clienteNome || "LOCATÁRIO(A)",
                     style: "signatureName",
