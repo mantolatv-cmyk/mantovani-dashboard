@@ -195,3 +195,49 @@ export function isFirebaseConfigured() {
   const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
   return apiKey && apiKey !== "sua-api-key-aqui" && apiKey.length > 10;
 }
+
+/**
+ * Dados fictícios para Notas Fiscais
+ */
+export const mockNotasFiscais = [
+  {
+    id: "nf1",
+    clienteNome: "Carlos Alberto Souza",
+    clienteCpf: "123.456.789-00",
+    numeroNota: "202604001",
+    valor: 1800.00,
+    dataEmissao: "2026-04-02",
+    arquivoUrl: "https://pdfobject.com/pdf/sample.pdf",
+    criadoEm: new Date("2026-04-02")
+  },
+  {
+    id: "nf2",
+    clienteNome: "Fernanda Lima Pereira",
+    clienteCpf: "987.654.321-00",
+    numeroNota: "202604002",
+    valor: 3600.00,
+    dataEmissao: "2026-04-03",
+    arquivoUrl: "https://pdfobject.com/pdf/sample.pdf",
+    criadoEm: new Date("2026-04-03")
+  },
+  {
+    id: "nf3",
+    clienteNome: "Roberto Mendes",
+    clienteCpf: "456.789.123-00",
+    numeroNota: "202604008",
+    valor: 2200.00,
+    dataEmissao: "2026-04-05",
+    arquivoUrl: "https://pdfobject.com/pdf/sample.pdf",
+    criadoEm: new Date("2026-04-05")
+  },
+  {
+    id: "nf4",
+    clienteNome: "João Pedro Almeida",
+    clienteCpf: "654.321.987-00",
+    numeroNota: "202603099",
+    valor: 2700.00,
+    dataEmissao: "2026-03-30",
+    arquivoUrl: "https://pdfobject.com/pdf/sample.pdf",
+    criadoEm: new Date("2026-03-30")
+  }
+];
