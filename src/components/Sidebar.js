@@ -15,14 +15,6 @@ import {
   X,
   HardHat,
 } from "lucide-react";
-  Package,
-  FilePlus,
-  RotateCcw,
-  Wrench,
-  ClipboardList,
-  Menu,
-  X,
-} from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
