@@ -42,15 +42,15 @@ function formatCurrency(value) {
  * @returns {Promise<Blob>} Blob do PDF gerado
  */
 export function generateContractPDF(data) {
-  return new Promise((resolve, reject) => {
-    try {
-      // Registra fontes sob demanda para evitar erros de SSR no Next.js
-      if (typeof window !== "undefined") {
-         const vfs = pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfFonts;
-         pdfMake.vfs = vfs;
-      } else {
-         return reject(new Error("PDFs só podem ser gerados no client-side"));
-      }
+  return Promise.race([
+    new Promise((resolve, reject) => {
+      try {
+        if (typeof window !== "undefined") {
+           const vfs = pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfFonts;
+           pdfMake.vfs = vfs;
+        } else {
+           return reject(new Error("PDFs só podem ser gerados no client-side"));
+        }
 
       const docDefinition = {
         pageSize: "A4",
@@ -400,5 +400,7 @@ export function generateContractPDF(data) {
     } catch (error) {
       reject(error);
     }
-  });
+  }),
+  new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout pdfMake")), 5000))
+  ]);
 }
