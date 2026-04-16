@@ -49,13 +49,18 @@ export function useNotasFiscais() {
       let arquivoUrl = "";
       if (fileBlob) {
         try {
+          // Aumentado para 60 segundos para suportar arquivos maiores/conexões lentas
           arquivoUrl = await Promise.race([
             uploadNotaFiscal(data.clienteNome, fileBlob),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout_Upload")), 8000))
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout_Upload")), 60000))
           ]);
+          
+          if (!arquivoUrl) {
+            throw new Error("O servidor não retornou o link do arquivo após o upload.");
+          }
         } catch (uploadObjErr) {
-          console.warn("Storage upload error/timeout nas notas:", uploadObjErr);
-          // Permite que continue para gravar o registro no banco mesmo sem o arquivo na nuvem
+          console.error("Erro no upload da Nota Fiscal:", uploadObjErr);
+          throw new Error("Falha ao enviar o arquivo para o servidor. Tente novamente com um arquivo menor ou verifique sua conexão.");
         }
       }
       
