@@ -35,8 +35,21 @@ function getBase64Image(url) {
 /**
  * Formata data ISO para formato brasileiro dd/mm/aaaa
  */
-function formatDate(dateStr) {
-  if (!dateStr) return "—";
+function formatDate(dateValue) {
+  if (!dateValue) return "—";
+  
+  // Se for um objeto (Date ou Timestamp), converte para string ISO YYYY-MM-DD
+  let dateStr = dateValue;
+  if (typeof dateValue === 'object') {
+    if (dateValue.toDate) {
+      dateStr = dateValue.toDate().toISOString().split('T')[0];
+    } else if (dateValue instanceof Date) {
+      dateStr = dateValue.toISOString().split('T')[0];
+    }
+  }
+
+  if (typeof dateStr !== 'string') return "—";
+
   const parts = dateStr.split("-");
   if (parts.length === 3) {
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
@@ -285,7 +298,7 @@ export async function generateMaintenanceOS(data) {
               width: "*",
               stack: [
                 { text: [ { text: "Status Inicial: ", bold: true }, data.status === "esperando_pecas" ? "Esperando Peças" : data.status || "—" ] },
-                { text: [ { text: "Data de Entrada: ", bold: true }, formatDate(data.criadoEm?.toISOString?.()?.split("T")[0] || data.criadoEm || "") ], margin: [0, 5, 0, 0] },
+                { text: [ { text: "Data de Entrada: ", bold: true }, formatDate(data.criadoEm) ], margin: [0, 5, 0, 0] },
                 { text: [ { text: "Localidade: ", bold: true }, "Atibaia / SP" ], margin: [0, 5, 0, 0] }
               ],
               style: "bodyText"
