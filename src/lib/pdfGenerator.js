@@ -319,8 +319,8 @@ export async function generateMaintenanceOS(data) {
         { 
           text: data.observacao || "Nenhuma observação informada.", 
           style: "bodyText", 
-          margin: [0, 0, 0, 30],
-          minHeight: 100 
+          margin: [0, 0, 0, 15],
+          minHeight: 60 
         },
 
         {
@@ -334,9 +334,9 @@ export async function generateMaintenanceOS(data) {
         },
         {
           canvas: [
-            { type: "rect", x: 0, y: 0, w: 495, h: 200, r: 4, lineColor: "#e2e8f0" }
+            { type: "rect", x: 0, y: 0, w: 495, h: 150, r: 4, lineColor: "#e2e8f0" }
           ],
-          margin: [0, 0, 0, 40]
+          margin: [0, 0, 0, 20]
         },
 
         {
@@ -366,7 +366,7 @@ export async function generateMaintenanceOS(data) {
           fontSize: 8, 
           color: "#94a3b8", 
           alignment: "center", 
-          margin: [0, 100, 0, 0] 
+          margin: [0, 30, 0, 0] 
         }
       ],
       styles: {
