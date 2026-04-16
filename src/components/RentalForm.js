@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   User,
   Mail,
@@ -14,6 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useEquipments } from "@/hooks/useEquipments";
+import { useRentals } from "@/hooks/useRentals";
 import { createRental, updateRentalContractUrl } from "@/lib/firestore";
 import { uploadContract } from "@/lib/storage";
 import { generateContractPDF } from "@/lib/pdfGenerator";
@@ -38,11 +39,43 @@ export default function RentalForm() {
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const { equipments, loading: loadingEq } = useEquipments();
+  const { rentals } = useRentals(null);
   const { addToast } = useToast();
   const isDemo = !isFirebaseConfigured();
 
+  // Mapeia clientes únicos baseados no histórico de locações
+  const clientesUnicos = useMemo(() => {
+    if (!rentals) return [];
+    const map = new Map();
+    rentals.forEach((r) => {
+      if (r.cliente && r.cliente.nome) {
+        if (!map.has(r.cliente.nome)) {
+          map.set(r.cliente.nome, r.cliente);
+        }
+      }
+    });
+    return Array.from(map.values());
+  }, [rentals]);
+
   function handleChange(e) {
     const { name, value } = e.target;
+
+    // Se o usuário selecionou/digitou o nome de um cliente preexistente, auto-preenche o resto
+    if (name === "clienteNome") {
+      const clienteEncontrado = clientesUnicos.find(c => c.nome === value);
+      if (clienteEncontrado) {
+        setForm((prev) => ({
+          ...prev,
+          clienteNome: clienteEncontrado.nome,
+          clienteCpf: clienteEncontrado.cpf || "",
+          clienteEmail: clienteEncontrado.email || "",
+          clienteTelefone: clienteEncontrado.telefone || "",
+          clienteEndereco: clienteEncontrado.endereco || "",
+        }));
+        return;
+      }
+    }
+
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
@@ -198,12 +231,18 @@ export default function RentalForm() {
               <input
                 type="text"
                 name="clienteNome"
+                list="clientes-list"
                 value={form.clienteNome}
                 onChange={handleChange}
                 placeholder="Nome do cliente"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
                 id="client-name-input"
               />
+              <datalist id="clientes-list">
+                {clientesUnicos.map((cliente, idx) => (
+                  <option key={idx} value={cliente.nome} />
+                ))}
+              </datalist>
             </div>
           </div>
 
