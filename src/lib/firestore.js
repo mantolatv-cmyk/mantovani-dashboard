@@ -153,14 +153,19 @@ export async function returnRental(rentalId) {
       throw new Error("Esta locação já foi encerrada.");
     }
 
-    const equipRef = doc(db, "equipamentos", rentalData.equipamentoId);
-    const equipDoc = await transaction.get(equipRef);
+    if (rentalData.equipamentoId && typeof rentalData.equipamentoId === 'string') {
+      const equipRef = doc(db, "equipamentos", rentalData.equipamentoId);
+      const equipDoc = await transaction.get(equipRef);
 
-    if (equipDoc.exists()) {
-      const equipData = equipDoc.data();
-      transaction.update(equipRef, {
-        disponivel: equipData.disponivel + rentalData.quantidade,
-      });
+      if (equipDoc.exists()) {
+        const equipData = equipDoc.data();
+        let qtd = Number(rentalData.quantidade);
+        if (isNaN(qtd)) qtd = 1;
+        
+        transaction.update(equipRef, {
+          disponivel: equipData.disponivel + qtd,
+        });
+      }
     }
 
     // Encerra locação
@@ -253,14 +258,16 @@ export async function returnFromMaintenance(maintenanceId) {
     }
 
     const mainData = mainDoc.data();
-    const equipRef = doc(db, "equipamentos", mainData.equipamentoId);
-    const equipDoc = await transaction.get(equipRef);
+    if (mainData.equipamentoId) {
+      const equipRef = doc(db, "equipamentos", mainData.equipamentoId);
+      const equipDoc = await transaction.get(equipRef);
 
-    if (equipDoc.exists()) {
-      const equipData = equipDoc.data();
-      transaction.update(equipRef, {
-        disponivel: equipData.disponivel + mainData.quantidade,
-      });
+      if (equipDoc.exists()) {
+        const equipData = equipDoc.data();
+        transaction.update(equipRef, {
+          disponivel: equipData.disponivel + mainData.quantidade,
+        });
+      }
     }
 
     // Remove registro de manutenção
@@ -283,14 +290,16 @@ export async function writeOffEquipment(maintenanceId) {
     }
 
     const mainData = mainDoc.data();
-    const equipRef = doc(db, "equipamentos", mainData.equipamentoId);
-    const equipDoc = await transaction.get(equipRef);
+    if (mainData.equipamentoId) {
+      const equipRef = doc(db, "equipamentos", mainData.equipamentoId);
+      const equipDoc = await transaction.get(equipRef);
 
-    if (equipDoc.exists()) {
-      const equipData = equipDoc.data();
-      transaction.update(equipRef, {
-        totalComprado: Math.max(0, equipData.totalComprado - mainData.quantidade),
-      });
+      if (equipDoc.exists()) {
+        const equipData = equipDoc.data();
+        transaction.update(equipRef, {
+          totalComprado: Math.max(0, equipData.totalComprado - mainData.quantidade),
+        });
+      }
     }
 
     // Remove registro de manutenção
@@ -326,6 +335,7 @@ export async function addNotaFiscal(data) {
 export async function deleteNotaFiscal(id) {
   await deleteDoc(doc(db, "notas_fiscais", id));
 }
+
 /**
  * LIMPEZA TOTAL (Reset do sistema para dados reais)
  */
