@@ -23,6 +23,8 @@ import {
 } from "@/lib/firestore";
 import { useToast } from "@/components/Toast";
 import { isFirebaseConfigured } from "@/lib/mockData";
+import { generateMaintenanceOS } from "@/lib/pdfGenerator";
+import { FileDown } from "lucide-react";
 
 const STATUS_CONFIG = {
   esperando_pecas: {
@@ -151,6 +153,17 @@ export default function MaintenanceList({ maintenances, loading }) {
       addToast(`Erro: ${error.message}`, "error");
     } finally {
       setProcessingId(null);
+    }
+  }
+  
+  async function handleGenerateOS(item) {
+    try {
+      addToast(`Gerando Ordem de Serviço para "${item.equipamentoNome}"...`, "info");
+      const blob = await generateMaintenanceOS(item);
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } catch (error) {
+      addToast(`Erro ao gerar PDF: ${error.message}`, "error");
     }
   }
 
@@ -286,13 +299,27 @@ export default function MaintenanceList({ maintenances, loading }) {
                             <p className="text-[11px] text-slate-500">
                               Qtd: {item.quantidade} — Desde {formatDate(item.criadoEm)}
                             </p>
+                            {item.numeroEquipamento && (
+                              <p className="text-[10px] text-amber-500/70 font-mono mt-1">
+                                Série: {item.numeroEquipamento}
+                              </p>
+                            )}
                           </div>
                         </div>
-                        <span
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${cfg.badgeBg} ${cfg.text} border ${cfg.badgeBorder}`}
-                        >
-                          #{cfg.number} {cfg.label}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleGenerateOS(item)}
+                            className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
+                            title="Gerar Ordem de Serviço (PDF)"
+                          >
+                            <FileDown size={16} />
+                          </button>
+                          <span
+                            className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${cfg.badgeBg} ${cfg.text} border ${cfg.badgeBorder}`}
+                          >
+                            #{cfg.number} {cfg.label}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Observation */}

@@ -219,6 +219,7 @@ export async function sendToMaintenance(data) {
     transaction.set(newMainRef, {
       equipamentoId: data.equipamentoId,
       equipamentoNome: data.equipamentoNome,
+      numeroEquipamento: data.numeroEquipamento || "",
       quantidade: quantidade,
       status: "esperando_pecas",
       observacao: data.observacao || "",

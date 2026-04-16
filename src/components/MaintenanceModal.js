@@ -9,6 +9,7 @@ import { isFirebaseConfigured } from "@/lib/mockData";
 
 export default function MaintenanceModal({ isOpen, onClose }) {
   const [equipamentoId, setEquipamentoId] = useState("");
+  const [numeroEquipamento, setNumeroEquipamento] = useState("");
   const [quantidade, setQuantidade] = useState(1);
   const [observacao, setObservacao] = useState("");
   const [saving, setSaving] = useState(false);
@@ -51,11 +52,13 @@ export default function MaintenanceModal({ isOpen, onClose }) {
       await sendToMaintenance({
         equipamentoId,
         equipamentoNome: eq?.nome || "",
+        numeroEquipamento: numeroEquipamento.trim(),
         quantidade: Number(quantidade),
         observacao: observacao.trim(),
       });
       addToast(`"${eq?.nome}" enviado para manutenção!`, "success");
       setEquipamentoId("");
+      setNumeroEquipamento("");
       setQuantidade(1);
       setObservacao("");
       onClose();
@@ -121,6 +124,20 @@ export default function MaintenanceModal({ isOpen, onClose }) {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Número de Identificação */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              Número de Identificação / Série
+            </label>
+            <input
+              type="text"
+              value={numeroEquipamento}
+              onChange={(e) => setNumeroEquipamento(e.target.value)}
+              placeholder="Ex: MAQ-001 ou S/N"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/40 transition-all"
+            />
           </div>
 
           {/* Quantidade */}

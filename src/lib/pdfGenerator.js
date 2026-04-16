@@ -219,3 +219,165 @@ export async function generateContractPDF(data) {
     throw err;
   }
 }
+
+/**
+ * Gera o PDF da Ordem de Serviço de manutenção.
+ * @param {Object} data - Dados da manutenção
+ * @returns {Promise<Blob>} Blob do PDF gerado
+ */
+export async function generateMaintenanceOS(data) {
+  if (typeof window === "undefined") {
+    throw new Error("PDFs só podem ser gerados no client-side");
+  }
+
+  try {
+    if (!window.pdfMake) {
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js");
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.min.js");
+    }
+
+    if (!window.pdfMake || !window.pdfMake.vfs) {
+      throw new Error("Falha ao inicializar o PDFMake via CDN.");
+    }
+
+    const pdfMake = window.pdfMake;
+
+    // Carrega a logo Base64
+    let logoBase64 = null;
+    try {
+      logoBase64 = await getBase64Image("/logo.png");
+    } catch (e) {
+      console.warn("Falha ao carregar logo:", e);
+    }
+
+    const docDefinition = {
+      pageSize: "A4",
+      pageMargins: [50, 40, 50, 60],
+      content: [
+        logoBase64 
+          ? { image: logoBase64, width: 100, alignment: "center", margin: [0, 0, 0, 10] }
+          : { text: "BETONEIRAS MANTOVANI", style: "logo", alignment: "center" },
+        
+        { text: "Equipamentos para Construção Civil", style: "subtitle", alignment: "center", margin: [0, 0, 0, 20] },
+        { text: "ORDEM DE SERVIÇO - MANUTENÇÃO", style: "mainTitle", alignment: "center", margin: [0, 0, 0, 30] },
+        
+        {
+          table: {
+            widths: ["*"],
+            body: [
+              [{ text: "DADOS DA SOLICITAÇÃO", bold: true, fillColor: "#f8fafc", padding: [8, 4] }]
+            ]
+          },
+          margin: [0, 0, 0, 10]
+        },
+        {
+          columns: [
+            {
+              width: "*",
+              stack: [
+                { text: [ { text: "Equipamento: ", bold: true }, data.equipamentoNome || "—" ] },
+                { text: [ { text: "Número Série/ID: ", bold: true }, data.numeroEquipamento || "—" ], margin: [0, 5, 0, 0] },
+                { text: [ { text: "Quantidade: ", bold: true }, data.quantidade || 1 ], margin: [0, 5, 0, 0] }
+              ],
+              style: "bodyText"
+            },
+            {
+              width: "*",
+              stack: [
+                { text: [ { text: "Status Inicial: ", bold: true }, data.status === "esperando_pecas" ? "Esperando Peças" : data.status || "—" ] },
+                { text: [ { text: "Data de Entrada: ", bold: true }, formatDate(data.criadoEm?.toISOString?.()?.split("T")[0] || data.criadoEm || "") ], margin: [0, 5, 0, 0] },
+                { text: [ { text: "Localidade: ", bold: true }, "Atibaia / SP" ], margin: [0, 5, 0, 0] }
+              ],
+              style: "bodyText"
+            }
+          ],
+          margin: [0, 0, 0, 20]
+        },
+
+        {
+          table: {
+            widths: ["*"],
+            body: [
+              [{ text: "DESCRIÇÃO DO PROBLEMA / OBSERVAÇÕES", bold: true, fillColor: "#f8fafc", padding: [8, 4] }]
+            ]
+          },
+          margin: [0, 0, 0, 10]
+        },
+        { 
+          text: data.observacao || "Nenhuma observação informada.", 
+          style: "bodyText", 
+          margin: [0, 0, 0, 30],
+          minHeight: 100 
+        },
+
+        {
+          table: {
+            widths: ["*"],
+            body: [
+              [{ text: "RELATÓRIO TÉCNICO E CONSERTO (USO INTERNO)", bold: true, fillColor: "#f8fafc", padding: [8, 4] }]
+            ]
+          },
+          margin: [0, 0, 0, 10]
+        },
+        {
+          canvas: [
+            { type: "rect", x: 0, y: 0, w: 495, h: 200, r: 4, lineColor: "#e2e8f0" }
+          ],
+          margin: [0, 0, 0, 40]
+        },
+
+        {
+          columns: [
+            {
+              width: "*",
+              stack: [
+                { text: "________________________________________", margin: [0, 20, 0, 5] },
+                { text: "Assinatura do Responsável", fontSize: 9, color: "#64748b" }
+              ],
+              alignment: "center"
+            },
+            {
+              width: "*",
+              stack: [
+                { text: "________________________________________", margin: [0, 20, 0, 5] },
+                { text: "Visto Mantovani", fontSize: 9, color: "#64748b" }
+              ],
+              alignment: "center"
+            }
+          ]
+        },
+
+        { 
+          text: `Gerado em ${getDataHoje()} — Dashboard Mantovani`, 
+          style: "bodyText", 
+          fontSize: 8, 
+          color: "#94a3b8", 
+          alignment: "center", 
+          margin: [0, 100, 0, 0] 
+        }
+      ],
+      styles: {
+        logo: { fontSize: 18, bold: true, color: "#1e3a5f" },
+        subtitle: { fontSize: 10, color: "#475569" },
+        mainTitle: { fontSize: 16, bold: true, color: "#000000" },
+        bodyText: { fontSize: 10, lineHeight: 1.5, color: "#000000" }
+      },
+      defaultStyle: { font: "Roboto", fontSize: 10 }
+    };
+
+    return new Promise((resolve, reject) => {
+      try {
+        const pdfDoc = pdfMake.createPdf(docDefinition);
+        pdfDoc.getBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error("Erro ao gerar Blob da OS"));
+        });
+      } catch (err) {
+        reject(err);
+      }
+    });
+
+  } catch (err) {
+    throw err;
+  }
+}
