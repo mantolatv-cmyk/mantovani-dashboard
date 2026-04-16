@@ -177,7 +177,10 @@ export async function returnRental(rentalId, quantityToReturn) {
 
     const novaQtdDevolvida = qtdDevolvidaAnterior + qtd;
     const historicoAtual = rentalData.historicoDevolucoes || [];
-    const novoHistorico = [...historicoAtual, { quantidade: qtd, data: serverTimestamp() }];
+    
+    // IMPORTANTE: FieldValue.serverTimestamp() não pode ser colocado dentro de um array. 
+    // Precisamos usar Timestamp.now() (tempo do cliente) ou salvar fora do array.
+    const novoHistorico = [...historicoAtual, { quantidade: qtd, data: Timestamp.now() }];
 
     const updates = {
       quantidadeDevolvida: novaQtdDevolvida,
