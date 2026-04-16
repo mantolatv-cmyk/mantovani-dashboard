@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Plus, Search, FileText, Download, Trash2, Receipt } from "lucide-react";
+import { Plus, Search, FileText, Download, Trash2, Receipt, Eye } from "lucide-react";
 import { useNotasFiscais } from "@/hooks/useNotasFiscais";
 import { useRentals } from "@/hooks/useRentals";
 import NotaFiscalModal from "@/components/NotaFiscalModal";
+import NFPreviewModal from "@/components/NFPreviewModal";
 
 export default function NotasFiscaisPage() {
   const { notas, loading: loadingNotas, handleAddNota, handleDeleteNota } = useNotasFiscais();
@@ -13,6 +14,7 @@ export default function NotasFiscaisPage() {
   
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [previewNota, setPreviewNota] = useState(null);
 
   // Derive unique clients map exactly like ClientList.js does
   const clientsMap = useMemo(() => {
@@ -152,15 +154,24 @@ export default function NotasFiscaisPage() {
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       {nota.arquivoUrl && (
-                        <a
-                          href={nota.arquivoUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          title="Fazer Download da NF"
-                          className="p-2 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition-colors"
-                        >
-                          <Download size={18} />
-                        </a>
+                        <>
+                          <button
+                            onClick={() => setPreviewNota(nota)}
+                            className="p-2 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition-colors"
+                            title="Visualizar Nota"
+                          >
+                            <Eye size={18} />
+                          </button>
+                          <a
+                            href={nota.arquivoUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="Fazer Download da NF"
+                            className="p-2 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition-colors"
+                          >
+                            <Download size={18} />
+                          </a>
+                        </>
                       )}
                       
                       <button
@@ -189,6 +200,12 @@ export default function NotasFiscaisPage() {
         onClose={() => setIsModalOpen(false)}
         clientsMap={clientsMap}
         onSuccess={handleSaveNota}
+      />
+
+      {/* Preview NF */}
+      <NFPreviewModal 
+        nota={previewNota} 
+        onClose={() => setPreviewNota(null)} 
       />
     </div>
   );
