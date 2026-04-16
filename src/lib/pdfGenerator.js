@@ -1,4 +1,15 @@
-// Imports dinâmicos usados dentro da função para segurança no App Router
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      return resolve();
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
 
 /**
  * Formata data ISO para formato brasileiro dd/mm/aaaa
@@ -36,7 +47,7 @@ function formatCurrency(value) {
 }
 
 /**
- * Gera o PDF do contrato de locação usando pdfmake.
+ * Gera o PDF do contrato de locação usando pdfmake via CDN Puro.
  * @param {Object} data - Dados da locação
  * @returns {Promise<Blob>} Blob do PDF gerado
  */
@@ -46,17 +57,19 @@ export async function generateContractPDF(data) {
   }
 
   try {
-    const pdfMakeModule = await import("pdfmake/build/pdfmake");
-    const pdfFontsModule = await import("pdfmake/build/vfs_fonts");
-    
-    const pdfMake = pdfMakeModule.default || pdfMakeModule;
-    const pdfFonts = pdfFontsModule.default || pdfFontsModule;
-    
-    if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
-      pdfMake.vfs = pdfFonts.pdfMake.vfs;
-    } else if (pdfFonts && pdfFonts.vfs) {
-      pdfMake.vfs = pdfFonts.vfs;
+    console.log("PDF_GEN: Carregando Engine via CDN...");
+    if (!window.pdfMake) {
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js");
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.min.js");
     }
+
+    if (!window.pdfMake || !window.pdfMake.vfs) {
+      throw new Error("Falha ao inicializar o PDFMake via CDN.");
+    }
+
+    console.log("PDF_GEN: Engine Carregada!");
+
+    const pdfMake = window.pdfMake;
 
     const equipamentoTexto = `${data.equipamentoNome || "—"}${data.numeroEquipamento ? ` (Série: ${data.numeroEquipamento})` : ""} - Qtd: ${data.quantidade || 1}`;
 
@@ -161,14 +174,18 @@ export async function generateContractPDF(data) {
       defaultStyle: { font: "Roboto", fontSize: 10 }
     };
 
+    console.log("PDF_GEN: Iniciando createPdf...");
     return new Promise((resolve, reject) => {
       try {
         const pdfDoc = pdfMake.createPdf(docDefinition);
+        console.log("PDF_GEN: Documento criado. Requisitando envio do blob...");
         pdfDoc.getBlob((blob) => {
+          console.log("PDF_GEN: Blob obtido.");
           if (blob) resolve(blob);
           else reject(new Error("Erro ao gerar Blob do PDF"));
         });
       } catch (err) {
+        console.error("PDF_GEN: Erro síncrono", err);
         reject(err);
       }
     });

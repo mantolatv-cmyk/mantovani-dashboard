@@ -130,11 +130,7 @@ export default function RentalForm() {
 
       // 2. Gera o PDF do contrato
       try {
-        // Timeout de 30s para geração do PDF (Bundle pesado / conexões lentas)
-        const pdfBlob = await Promise.race([
-          generateContractPDF(rentalData),
-          new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout ao carregar gerador de PDF (30s)")), 30000))
-        ]);
+        const pdfBlob = await generateContractPDF(rentalData);
 
         // 3. Download do PDF para o operador PRIMEIRO
         const url = URL.createObjectURL(pdfBlob);

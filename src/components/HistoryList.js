@@ -30,11 +30,7 @@ export default function HistoryList({ history, loading }) {
 
     setRegeneratingId(entry.id);
     try {
-      // 30s timeout safety
-      const pdfBlob = await Promise.race([
-        generateContractPDF(entry.rawData),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout (30s)")), 30000))
-      ]);
+      const pdfBlob = await generateContractPDF(entry.rawData);
 
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement("a");
