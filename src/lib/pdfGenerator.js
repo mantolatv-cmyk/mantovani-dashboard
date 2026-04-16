@@ -46,80 +46,117 @@ export async function generateContractPDF(data) {
   }
 
   try {
-    // Carregamento dinâmico para evitar problemas de SSR no Next.js
     const pdfMakeModule = await import("pdfmake/build/pdfmake");
     const pdfFontsModule = await import("pdfmake/build/vfs_fonts");
     
     const pdfMake = pdfMakeModule.default || pdfMakeModule;
     const pdfFonts = pdfFontsModule.default || pdfFontsModule;
     
-    // Atribuição padrão do VFS para pdfmake
     if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
       pdfMake.vfs = pdfFonts.pdfMake.vfs;
     } else if (pdfFonts && pdfFonts.vfs) {
       pdfMake.vfs = pdfFonts.vfs;
     }
 
+    const equipamentoTexto = `${data.equipamentoNome || "—"}${data.numeroEquipamento ? ` (Série: ${data.numeroEquipamento})` : ""} - Qtd: ${data.quantidade || 1}`;
+
     const docDefinition = {
       pageSize: "A4",
-      pageMargins: [40, 60, 40, 60],
+      pageMargins: [50, 60, 50, 60],
       content: [
-        { text: "MANTOVANI", style: "header", alignment: "center" },
-        { text: "Locação de Equipamentos", style: "subtitle", alignment: "center", margin: [0, 0, 0, 20] },
-        { text: "CONTRATO DE LOCAÇÃO", style: "title", alignment: "center", margin: [0, 0, 0, 20] },
+        { text: "Logo Betoneiras Mantovani", style: "logo", alignment: "center" },
+        { text: "Equipamentos para Construção Civil", style: "subtitle", alignment: "center", margin: [0, 0, 0, 20] },
+        { text: "CONTRATO DE LOCAÇÃO", style: "mainTitle", alignment: "center", margin: [0, 0, 0, 25] },
         
-        { text: "DADOS DO LOCATÁRIO", style: "section" },
-        { text: `Nome: ${data.clienteNome || "—"}`, margin: [0, 2] },
-        { text: `CPF: ${data.clienteCpf || "—"}`, margin: [0, 2] },
-        { text: `Endereço: ${data.clienteEndereco || "—"}`, margin: [0, 2, 0, 15] },
-
-        { text: "DADOS DA LOCAÇÃO", style: "section" },
-        {
-          table: {
-            widths: ["*", "auto", "auto"],
-            body: [
-              [{ text: "Item", bold: true }, { text: "Ref/Série", bold: true }, { text: "Qtd", bold: true }],
-              [
-                { text: data.equipamentoNome || "—" },
-                { text: data.numeroEquipamento || "—" },
-                { text: String(data.quantidade || 1), alignment: "center" }
-              ]
-            ]
-          },
-          margin: [0, 5, 0, 15]
-        },
-
-        { text: `Vigência: ${formatDate(data.dataInicio)} até ${formatDate(data.dataFim)}`, margin: [0, 5] },
-        { text: `Valor Total: ${formatCurrency(data.valorTotal)}`, bold: true, margin: [0, 5, 0, 20] },
-
-        { text: "Assinaturas:", margin: [0, 40, 0, 0] },
         {
           columns: [
             {
-              stack: [
-                { text: "__________________________", margin: [0, 20, 0, 0] },
-                { text: "MANTOVANI", bold: true },
-                { text: "Locadora", fontSize: 8 }
+              width: "*",
+              text: [
+                { text: "LOCADORA\n", bold: true, fontSize: 11 },
+                "Empresa: Betoneiras Mantovani Ltda.\n",
+                "CNPJ: [Seu CNPJ]\n",
+                "Endereço: [Seu Endereço]"
               ],
-              alignment: "center"
+              style: "bodyText"
             },
             {
-              stack: [
-                { text: "__________________________", margin: [0, 20, 0, 0] },
-                { text: data.clienteNome || "LOCATÁRIO", bold: true },
-                { text: "Locatário", fontSize: 8 }
+              width: "*",
+              text: [
+                { text: "LOCATÁRIO(A)\n", bold: true, fontSize: 11 },
+                `Nome/Razão Social: ${data.clienteNome || "—"}\n`,
+                `CPF/CNPJ: ${data.clienteCpf || "—"}\n`,
+                `Endereço: ${data.clienteEndereco || "—"}`
               ],
-              alignment: "center"
+              style: "bodyText"
+            }
+          ],
+          margin: [0, 0, 0, 20]
+        },
+
+        { text: "Pelo presente instrumento particular, as partes acima qualificadas celebram entre si o presente Contrato de Locação de Equipamentos, que se regerá pelas cláusulas e condições a seguir:", style: "bodyText", margin: [0, 0, 0, 20] },
+
+        { text: "CLÁUSULA PRIMEIRA – DO OBJETO", style: "sectionTitle" },
+        { text: "1.1. O objeto do presente contrato é a locação, pela LOCADORA ao(à) LOCATÁRIO(A), do(s) seguinte(s) equipamento(s) de construção:", style: "bodyText" },
+        { text: `Relação de Equipamento(s): ${equipamentoTexto}`, style: "bodyText", margin: [0, 5, 0, 15] },
+
+        { text: "CLÁUSULA SEGUNDA – DO PRAZO E CONDIÇÕES DE LOCAÇÃO", style: "sectionTitle" },
+        { text: `2.1. O prazo de locação do(s) equipamento(s) descrito(s) na Cláusula Primeira terá início na data ${formatDate(data.dataInicio)} e término na data ${formatDate(data.dataFim)}.`, style: "bodyText", margin: [0, 0, 0, 8] },
+        { text: "2.2. A devolução do equipamento após a data estipulada acarretará em cobrança de diárias adicionais proporcionais, além de possível multa por atraso no importe estipulado pela política da empresa.", style: "bodyText", margin: [0, 0, 0, 15] },
+
+        { text: "CLÁUSULA TERCEIRA – DO VALOR E FORMA DE PAGAMENTO", style: "sectionTitle" },
+        { text: `3.1. Pela locação do(s) equipamento(s), o(a) LOCATÁRIO(A) pagará à LOCADORA o valor total de ${formatCurrency(data.valorTotal)}.`, style: "bodyText", margin: [0, 0, 0, 8] },
+        { text: "3.2. O pagamento será efetuado através de [Inserir forma de pagamento padrão], na data de assinatura deste contrato ou no ato da retirada do equipamento.", style: "bodyText", margin: [0, 0, 0, 15] },
+
+        { text: "CLÁUSULA QUARTA – DAS OBRIGAÇÕES E RESPONSABILIDADES", style: "sectionTitle" },
+        { text: "4.1. Da LOCADORA: Entregar o equipamento em perfeitas condições de uso, funcionamento e segurança, realizando testes prévios na presença do(a) LOCATÁRIO(A) ou de seu representante autorizado.", style: "bodyText", margin: [0, 0, 0, 8] },
+        { text: "4.2. Do(a) LOCATÁRIO(A):", style: "bodyText", margin: [0, 0, 0, 5] },
+        {
+          ul: [
+            "Utilizar o equipamento estritamente para os fins a que se destina, operando-o exclusivamente por pessoas capacitadas.",
+            "Zelar pela guarda, conservação e manutenção preventiva do equipamento durante todo o período de vigência da locação.",
+            "Restituir o equipamento nas mesmas condições em que o recebeu, ressalvado o desgaste natural pelo uso regular.",
+            "Responsabilizar-se integralmente por roubo, furto, perda, incêndio ou danos causados ao equipamento durante o período em que este estiver sob sua posse."
+          ],
+          style: "bulletPoints",
+          margin: [15, 0, 0, 40]
+        },
+
+        { text: `[Sua Cidade - UF], ${getDataHoje()}.`, style: "bodyText", alignment: "center", margin: [0, 0, 0, 40] },
+
+        {
+          columns: [
+            {
+              width: "*",
+              stack: [
+                { text: "________________________________________", margin: [0, 20, 0, 0] },
+                { text: "BETONEIRAS MANTOVANI", bold: true },
+                { text: "LOCADORA" }
+              ],
+              alignment: "center",
+              style: "signatureArea"
+            },
+            {
+              width: "*",
+              stack: [
+                { text: "________________________________________", margin: [0, 20, 0, 0] },
+                { text: data.clienteNome ? data.clienteNome.toUpperCase() : "LOCATÁRIO(A)", bold: true },
+                { text: "LOCATÁRIO(A)" }
+              ],
+              alignment: "center",
+              style: "signatureArea"
             }
           ]
-        },
-        { text: getDataHoje(), alignment: "right", margin: [0, 20, 0, 0], fontSize: 8, color: "#999" }
+        }
       ],
       styles: {
-        header: { fontSize: 22, bold: true, color: "#1e3a5f" },
-        subtitle: { fontSize: 10, color: "#666" },
-        title: { fontSize: 14, bold: true, decoration: "underline" },
-        section: { fontSize: 11, bold: true, margin: [0, 10, 0, 5], color: "#1e3a5f" }
+        logo: { fontSize: 20, bold: true, color: "#1e3a5f" },
+        subtitle: { fontSize: 12, color: "#475569" },
+        mainTitle: { fontSize: 16, bold: true, decoration: "underline", color: "#000000" },
+        sectionTitle: { fontSize: 11, bold: true, margin: [0, 10, 0, 5], color: "#000000" },
+        bodyText: { fontSize: 10, lineHeight: 1.4, color: "#000000" },
+        bulletPoints: { fontSize: 10, lineHeight: 1.4, color: "#000000" },
+        signatureArea: { fontSize: 10 }
       },
       defaultStyle: { font: "Roboto", fontSize: 10 }
     };

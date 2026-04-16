@@ -1,0 +1,42 @@
+Página 1 de 2
+vigência da locação.
+• Zelar pela guarda, conservação e manutenção preventiva do equipamento durante todo o período de
+pessoas capacitadas.
+• Utilizar o equipamento estritamente para os fins a que se destina, operando-o exclusivamente por
+4.2. Do(a) LOCATÁRIO(A):
+realizando testes prévios na presença do(a) LOCATÁRIO(A) ou de seu representante autorizado.
+4.1. Da LOCADORA: Entregar o equipamento em perfeitas condições de uso, funcionamento e segurança,
+CLÁUSULA QUARTA – DAS OBRIGAÇÕES E RESPONSABILIDADES
+deste contrato ou no ato da retirada do equipamento.
+3.2. O pagamento será efetuado através de [Inserir forma de pagamento padrão], na data de assinatura
+{{VALOR}}.
+3.1. Pela locação do(s) equipamento(s), o(a) LOCATÁRIO(A) pagará à LOCADORA o valor total de  R$ 
+CLÁUSULA TERCEIRA – DO VALOR E FORMA DE PAGAMENTO
+proporcionais, além de possível multa por atraso no importe estipulado pela política da empresa.
+2.2. A devolução do equipamento após a data estipulada acarretará em cobrança de diárias adicionais
+{{DATA_INICIO}} e término na data {{DATA_FIM}}.
+2.1. O prazo de locação do(s) equipamento(s) descrito(s) na Cláusula Primeira terá início na data
+CLÁUSULA SEGUNDA – DO PRAZO E CONDIÇÕES DE LOCAÇÃO
+Relação de Equipamento(s):{{EQUIPAMENTO}}
+equipamento(s) de construção:
+1.1. O objeto do presente contrato é a locação, pela LOCADORA ao(à) LOCATÁRIO(A), do(s) seguinte(s)
+CLÁUSULA PRIMEIRA – DO OBJETO
+Locação de Equipamentos, que se regerá pelas cláusulas e condições a seguir: 
+Pelo presente instrumento particular, as partes acima qualificadas celebram entre si o presente Contrato de
+Endereço: [Seu Endereço]            Endereço:{{ENDERECO_CLIENTE}}
+CNPJ: [Seu CNPJ]                 CPF/CNPJ:{{CPF_CNPJ}}
+Empresa: Betoneiras Mantovani Ltda.    Nome/Razão Social:{{NOME_CLIENTE}}
+LOCADORA                LOCATÁRIO(A)
+Equipamentos para Construção Civil
+Logo Betoneiras Mantovani
+CONTRATO DE LOCAÇÃO
+----------------Page (0) Break----------------
+Página 2 de 2
+LOCADORA                             LOCATÁRIO(A)
+BETONEIRAS MANTOVANI               {{NOME_CLIENTE}}
+[Sua Cidade - UF], {{DATA_HOJE}}. 
+equipamento durante o período em que este estiver sob sua posse.
+• Responsabilizar-se   integralmente   por   roubo,   furto,   perda,   incêndio   ou   danos   causados   ao
+uso regular.
+• Restituir o equipamento nas mesmas condições em que o recebeu, ressalvado o desgaste natural pelo
+----------------Page (1) Break----------------
