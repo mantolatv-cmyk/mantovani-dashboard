@@ -59,7 +59,33 @@ export function useHistory() {
               });
 
               // Devolução
-              if (data.status === "encerrada") {
+              if (data.historicoDevolucoes && data.historicoDevolucoes.length > 0) {
+                data.historicoDevolucoes.forEach((dev, index) => {
+                  const devDate = dev.data?.toDate
+                    ? dev.data.toDate().toISOString().split("T")[0]
+                    : data.dataFim || "";
+                    
+                  entries.push({
+                    id: `devol-${doc.id}-${index}`,
+                    tipo: "devolucao",
+                    clienteNome: data.cliente?.nome || "—",
+                    equipamentoNome: data.equipamentoNome || "—",
+                    numeroEquipamento: data.numeroEquipamento || "",
+                    quantidade: dev.quantidade || 1,
+                    data: devDate,
+                    locacaoId: doc.id,
+                    rawData: {
+                      ...data,
+                      clienteNome: data.cliente?.nome,
+                      clienteCpf: data.cliente?.cpf,
+                      clienteEmail: data.cliente?.email,
+                      clienteTelefone: data.cliente?.telefone,
+                      clienteEndereco: data.cliente?.endereco,
+                    }
+                  });
+                });
+              } else if (data.status === "encerrada") {
+                // Fallback para locações legadas
                 const encerradoDate = data.encerradoEm?.toDate
                   ? data.encerradoEm.toDate().toISOString().split("T")[0]
                   : data.dataFim || "";

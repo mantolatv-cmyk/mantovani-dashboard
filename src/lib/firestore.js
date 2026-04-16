@@ -137,7 +137,7 @@ export async function createRental(rentalData) {
 /**
  * Registra devolução: encerra locação + restaura estoque atomicamente.
  */
-export async function returnRental(rentalId) {
+export async function returnRental(rentalId, quantityToReturn) {
   const rentalRef = doc(db, "locacoes", rentalId);
 
   await runTransaction(db, async (transaction) => {
@@ -153,26 +153,44 @@ export async function returnRental(rentalId) {
       throw new Error("Esta locação já foi encerrada.");
     }
 
+    const qtdOriginal = Number(rentalData.quantidade) || 1;
+    const qtdDevolvidaAnterior = Number(rentalData.quantidadeDevolvida) || 0;
+    const saldoRestante = qtdOriginal - qtdDevolvidaAnterior;
+    
+    // Se a quantidade não foi informada, assume devolução total do saldo
+    let qtd = quantityToReturn !== undefined ? Number(quantityToReturn) : saldoRestante;
+    if (isNaN(qtd) || qtd <= 0) throw new Error("Quantidade inválida para devolução.");
+    if (qtd > saldoRestante) throw new Error(`Não é possível devolver mais do que o saldo restante (${saldoRestante}).`);
+
+    // Atualiza estoque
     if (rentalData.equipamentoId && typeof rentalData.equipamentoId === 'string') {
       const equipRef = doc(db, "equipamentos", rentalData.equipamentoId);
       const equipDoc = await transaction.get(equipRef);
 
       if (equipDoc.exists()) {
         const equipData = equipDoc.data();
-        let qtd = Number(rentalData.quantidade);
-        if (isNaN(qtd)) qtd = 1;
-        
         transaction.update(equipRef, {
           disponivel: equipData.disponivel + qtd,
         });
       }
     }
 
-    // Encerra locação
-    transaction.update(rentalRef, {
-      status: "encerrada",
-      encerradoEm: serverTimestamp(),
-    });
+    const novaQtdDevolvida = qtdDevolvidaAnterior + qtd;
+    const historicoAtual = rentalData.historicoDevolucoes || [];
+    const novoHistorico = [...historicoAtual, { quantidade: qtd, data: serverTimestamp() }];
+
+    const updates = {
+      quantidadeDevolvida: novaQtdDevolvida,
+      historicoDevolucoes: novoHistorico,
+      atualizadoEm: serverTimestamp()
+    };
+
+    if (novaQtdDevolvida >= qtdOriginal) {
+      updates.status = "encerrada";
+      updates.encerradoEm = serverTimestamp();
+    }
+
+    transaction.update(rentalRef, updates);
   });
 }
 

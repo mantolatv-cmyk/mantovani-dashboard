@@ -15,9 +15,10 @@ import {
 import { returnRental } from "@/lib/firestore";
 import { useToast } from "@/components/Toast";
 import { isFirebaseConfigured } from "@/lib/mockData";
+import ReturnModal from "./ReturnModal";
 
 export default function ReturnsList({ rentals, loading }) {
-  const [returningId, setReturningId] = useState(null);
+  const [returningRentalObj, setReturningRentalObj] = useState(null);
   const { addToast } = useToast();
 
   function formatDate(dateStr) {
@@ -40,31 +41,12 @@ export default function ReturnsList({ rentals, loading }) {
     return dataFim < today;
   }
 
-  async function handleReturn(rental) {
-    if (
-      !confirm(
-        `Confirma a devolução do equipamento "${rental.equipamentoNome}" do cliente "${rental.cliente?.nome}"?`
-      )
-    )
-      return;
-
+  async function handleReturnClick(rental) {
     if (!isFirebaseConfigured()) {
-      addToast("Modo demonstração: conecte o Firebase para registrar devoluções e alterar dados.", "info");
+      addToast("Modo demonstração: conecte o Firebase para registrar devoluções.", "info");
       return;
     }
-
-    setReturningId(rental.id);
-    try {
-      await returnRental(rental.id);
-      addToast(
-        `Devolução de "${rental.equipamentoNome}" registrada com sucesso!`,
-        "success"
-      );
-    } catch (error) {
-      addToast(`Erro: ${error.message}`, "error");
-    } finally {
-      setReturningId(null);
-    }
+    setReturningRentalObj(rental);
   }
 
   if (loading) {
@@ -90,7 +72,8 @@ export default function ReturnsList({ rentals, loading }) {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" id="returns-list">
+    <>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" id="returns-list">
       {rentals.map((rental) => {
         const overdue = isOverdue(rental.dataFim);
 
@@ -141,8 +124,12 @@ export default function ReturnsList({ rentals, loading }) {
             <div className="space-y-2.5 mb-5">
               <div className="flex items-center gap-2.5">
                 <Package size={14} className="text-slate-500" />
-                <span className="text-sm text-slate-300">
-                  {rental.equipamentoNome} — Qtd: {rental.quantidade}
+                <span className="text-sm text-slate-300 flex items-center gap-2">
+                  <span>{rental.equipamentoNome}</span>
+                  <span className="px-1.5 py-0.5 rounded-md bg-slate-800/80 text-[10px] font-mono border border-slate-700/50">
+                    Qtd: {rental.quantidade}
+                    {(rental.quantidadeDevolvida || 0) > 0 && <span className="text-amber-400"> (-{rental.quantidadeDevolvida})</span>}
+                  </span>
                 </span>
               </div>
               <div className="flex items-center gap-2.5">
@@ -162,19 +149,12 @@ export default function ReturnsList({ rentals, loading }) {
             {/* Actions */}
             <div className="flex items-center gap-2 pt-4 border-t border-slate-800/50">
               <button
-                onClick={() => handleReturn(rental)}
-                disabled={returningId === rental.id}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 text-white text-sm font-medium shadow-lg shadow-amber-500/15 hover:shadow-amber-500/30 hover:from-amber-500 hover:to-amber-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                onClick={() => handleReturnClick(rental)}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 text-white text-sm font-medium shadow-lg shadow-amber-500/15 hover:shadow-amber-500/30 hover:from-amber-500 hover:to-amber-600 transition-all duration-200 active:scale-95"
                 id={`return-btn-${rental.id}`}
               >
-                {returningId === rental.id ? (
-                  <Loader2 size={15} className="animate-spin" />
-                ) : (
-                  <RotateCcw size={15} />
-                )}
-                {returningId === rental.id
-                  ? "Processando..."
-                  : "Registrar Devolução"}
+                <RotateCcw size={15} />
+                Registrar Devolução
               </button>
 
               {rental.contratoUrl && (
@@ -194,5 +174,12 @@ export default function ReturnsList({ rentals, loading }) {
         );
       })}
     </div>
+
+      <ReturnModal 
+        isOpen={!!returningRentalObj} 
+        onClose={() => setReturningRentalObj(null)}
+        rental={returningRentalObj}
+      />
+    </>
   );
 }
