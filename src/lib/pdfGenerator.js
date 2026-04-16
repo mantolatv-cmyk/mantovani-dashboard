@@ -12,6 +12,27 @@ function loadScript(src) {
 }
 
 /**
+ * Carrega uma imagem e converte para Base64
+ */
+function getBase64Image(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.setAttribute("crossOrigin", "anonymous");
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      const dataURL = canvas.toDataURL("image/png");
+      resolve(dataURL);
+    };
+    img.onerror = (error) => reject(error);
+    img.src = url;
+  });
+}
+
+/**
  * Formata data ISO para formato brasileiro dd/mm/aaaa
  */
 function formatDate(dateStr) {
@@ -68,13 +89,24 @@ export async function generateContractPDF(data) {
 
     const pdfMake = window.pdfMake;
 
+    // Carrega a logo Base64
+    let logoBase64 = null;
+    try {
+      logoBase64 = await getBase64Image("/logo.png");
+    } catch (e) {
+      console.warn("Falha ao carregar logo:", e);
+    }
+
     const equipamentoTexto = `${data.equipamentoNome || "—"}${data.numeroEquipamento ? ` (Série: ${data.numeroEquipamento})` : ""} - Qtd: ${data.quantidade || 1}`;
 
     const docDefinition = {
       pageSize: "A4",
-      pageMargins: [50, 60, 50, 60],
+      pageMargins: [50, 40, 50, 60],
       content: [
-        { text: "Logo Betoneiras Mantovani", style: "logo", alignment: "center" },
+        logoBase64 
+          ? { image: logoBase64, width: 120, alignment: "center", margin: [0, 0, 0, 10] }
+          : { text: "BETONEIRAS MANTOVANI", style: "logo", alignment: "center" },
+        
         { text: "Equipamentos para Construção Civil", style: "subtitle", alignment: "center", margin: [0, 0, 0, 20] },
         { text: "CONTRATO DE LOCAÇÃO", style: "mainTitle", alignment: "center", margin: [0, 0, 0, 25] },
         
@@ -85,8 +117,8 @@ export async function generateContractPDF(data) {
               text: [
                 { text: "LOCADORA\n", bold: true, fontSize: 11 },
                 "Empresa: Betoneiras Mantovani Ltda.\n",
-                "CNPJ: [Seu CNPJ]\n",
-                "Endereço: [Seu Endereço]"
+                "CNPJ: 52.342.052/0001-40\n",
+                "Endereço: Avenida São João, 1601, Atibaia/SP"
               ],
               style: "bodyText"
             },
@@ -132,7 +164,7 @@ export async function generateContractPDF(data) {
           margin: [15, 0, 0, 40]
         },
 
-        { text: `[Sua Cidade - UF], ${getDataHoje()}.`, style: "bodyText", alignment: "center", margin: [0, 0, 0, 40] },
+        { text: `Atibaia - SP, ${getDataHoje()}.`, style: "bodyText", alignment: "center", margin: [0, 0, 0, 40] },
 
         {
           columns: [
