@@ -57,7 +57,6 @@ export async function generateContractPDF(data) {
   }
 
   try {
-    console.log("PDF_GEN: Carregando Engine via CDN...");
     if (!window.pdfMake) {
       await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js");
       await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.min.js");
@@ -66,8 +65,6 @@ export async function generateContractPDF(data) {
     if (!window.pdfMake || !window.pdfMake.vfs) {
       throw new Error("Falha ao inicializar o PDFMake via CDN.");
     }
-
-    console.log("PDF_GEN: Engine Carregada!");
 
     const pdfMake = window.pdfMake;
 
@@ -128,7 +125,7 @@ export async function generateContractPDF(data) {
           ul: [
             "Utilizar o equipamento estritamente para os fins a que se destina, operando-o exclusivamente por pessoas capacitadas.",
             "Zelar pela guarda, conservação e manutenção preventiva do equipamento durante todo o período de vigência da locação.",
-            "Restituir o equipamento nas mesmas condições em que o recebeu, ressalvado o desgaste natural pelo uso regular.",
+            "Restituir o equipamento nas mesmas condições iniciais em que o recebeu, ressalvado o desgaste natural pelo uso regular.",
             "Responsabilizar-se integralmente por roubo, furto, perda, incêndio ou danos causados ao equipamento durante o período em que este estiver sob sua posse."
           ],
           style: "bulletPoints",
@@ -174,24 +171,20 @@ export async function generateContractPDF(data) {
       defaultStyle: { font: "Roboto", fontSize: 10 }
     };
 
-    console.log("PDF_GEN: Iniciando createPdf...");
     return new Promise((resolve, reject) => {
       try {
         const pdfDoc = pdfMake.createPdf(docDefinition);
-        console.log("PDF_GEN: Documento criado. Requisitando envio do blob...");
         pdfDoc.getBlob((blob) => {
-          console.log("PDF_GEN: Blob obtido.");
           if (blob) resolve(blob);
           else reject(new Error("Erro ao gerar Blob do PDF"));
         });
       } catch (err) {
-        console.error("PDF_GEN: Erro síncrono", err);
         reject(err);
       }
     });
 
   } catch (err) {
-    console.error("Erro fatal no PDF Generator:", err);
     throw err;
   }
+}
 }
