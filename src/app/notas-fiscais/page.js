@@ -153,26 +153,40 @@ export default function NotasFiscaisPage() {
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      {nota.arquivoUrl && (
-                        <>
+                        <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => setPreviewNota(nota)}
-                            className="p-2 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition-colors"
-                            title="Visualizar Nota"
+                            onClick={() => nota.arquivoUrl ? setPreviewNota(nota) : null}
+                            disabled={!nota.arquivoUrl}
+                            className={`p-2 rounded-lg transition-colors ${
+                              nota.arquivoUrl 
+                                ? "text-slate-400 hover:text-blue-400 hover:bg-slate-800" 
+                                : "text-slate-700 cursor-not-allowed"
+                            }`}
+                            title={nota.arquivoUrl ? "Visualizar Nota" : "Arquivo não disponível"}
                           >
                             <Eye size={18} />
                           </button>
-                          <a
-                            href={nota.arquivoUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            title="Fazer Download da NF"
-                            className="p-2 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition-colors"
-                          >
-                            <Download size={18} />
-                          </a>
-                        </>
-                      )}
+                          
+                          {nota.arquivoUrl ? (
+                            <a
+                              href={nota.arquivoUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              title="Fazer Download da NF"
+                              className="p-2 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition-colors"
+                            >
+                              <Download size={18} />
+                            </a>
+                          ) : (
+                            <button
+                              disabled
+                              className="p-2 rounded-lg text-slate-700 cursor-not-allowed"
+                              title="Arquivo não disponível"
+                            >
+                              <Download size={18} />
+                            </button>
+                          )}
+                        </div>
                       
                       <button
                         onClick={() => {
