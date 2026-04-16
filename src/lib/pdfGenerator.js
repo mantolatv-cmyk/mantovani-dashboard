@@ -219,4 +219,3 @@ export async function generateContractPDF(data) {
     throw err;
   }
 }
-}
