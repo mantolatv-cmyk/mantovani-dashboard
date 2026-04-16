@@ -151,7 +151,6 @@ export default function NotaFiscalModal({ isOpen, onClose, onSuccess, clientsMap
                   onChange={(e) => setArquivo(e.target.files[0])}
                   className="hidden"
                   id="nota-upload"
-                  required
                 />
                 <label
                   htmlFor="nota-upload"

@@ -155,6 +155,7 @@ export default function NotasFiscaisPage() {
                     <div className="flex items-center justify-end gap-2">
                         <div className="flex items-center justify-end gap-1">
                           <button
+                            type="button"
                             onClick={() => nota.arquivoUrl ? setPreviewNota(nota) : null}
                             disabled={!nota.arquivoUrl}
                             className={`p-2 rounded-lg transition-colors ${
@@ -179,6 +180,7 @@ export default function NotasFiscaisPage() {
                             </a>
                           ) : (
                             <button
+                              type="button"
                               disabled
                               className="p-2 rounded-lg text-slate-700 cursor-not-allowed"
                               title="Arquivo não disponível"
@@ -189,8 +191,9 @@ export default function NotasFiscaisPage() {
                         </div>
                       
                       <button
+                        type="button"
                         onClick={() => {
-                          if (confirm("Tem certeza que deseja excluir esta Nota Fiscal?")) {
+                          if (window.confirm("Tem certeza que deseja excluir esta Nota Fiscal?")) {
                             handleDeleteNota(nota.id);
                           }
                         }}
