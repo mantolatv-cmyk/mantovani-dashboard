@@ -141,7 +141,7 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="p-5 border-t border-slate-800/50 bg-slate-900/20">
+        <div className="p-5 border-t border-slate-800/50 bg-slate-900/20 space-y-3">
           <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800/30 border border-slate-700/30 shadow-inner">
             <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/10">
               <LayoutDashboard size={14} className="text-blue-400" />
@@ -153,6 +153,17 @@ export default function Sidebar() {
               <p className="text-[9px] text-blue-400/60 font-medium">Online & Sincronizado</p>
             </div>
           </div>
+
+          <button
+            onClick={async () => {
+              const { auth } = await import("@/lib/firebase");
+              await auth.signOut();
+            }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest text-red-400/70 hover:text-red-400 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20"
+          >
+            <X size={16} />
+            Sair do Sistema
+          </button>
         </div>
       </aside>
     </>
