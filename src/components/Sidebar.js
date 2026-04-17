@@ -56,26 +56,28 @@ export default function Sidebar() {
       <aside
         className={`
           fixed top-0 left-0 h-full z-50 w-[260px]
-          bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950
-          border-r border-slate-800/50
-          flex flex-col
+          bg-[#0a0d14] border-r border-slate-800/40
+          flex flex-col shadow-2xl shadow-black/50
           transition-transform duration-300 ease-in-out
           lg:translate-x-0
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
+        {/* Decorative Background Glow */}
+        <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-blue-600/5 to-transparent pointer-events-none" />
+
         {/* Header */}
-        <div className="p-6 border-b border-slate-800/50">
+        <div className="relative p-6 border-b border-slate-800/50 backdrop-blur-md">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
                 <HardHat size={22} className="text-white" />
               </div>
               <div>
                 <h1 className="text-lg font-bold text-white tracking-tight">
                   Mantovani
                 </h1>
-                <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">
+                <p className="text-[10px] text-blue-400/80 font-bold uppercase tracking-widest">
                   Locações
                 </p>
               </div>
@@ -91,8 +93,8 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1.5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-600 px-3 mb-3">
+        <nav className="relative flex-1 p-4 space-y-1 overflow-y-auto">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 px-4 mb-4 mt-2">
             Menu Principal
           </p>
           {navItems.map((item) => {
@@ -104,26 +106,34 @@ export default function Sidebar() {
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={`
-                  group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                  transition-all duration-200
+                  group relative flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
+                  transition-all duration-300
                   ${
                     isActive
-                      ? "bg-blue-600/15 text-blue-400 shadow-sm shadow-blue-500/5 border border-blue-500/20"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+                      ? "text-white bg-blue-600/10 border border-blue-500/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
+                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent"
                   }
                 `}
                 id={`nav-${item.href.replace("/", "") || "dashboard"}`}
               >
+                {/* Active Indicator Glow */}
+                {isActive && (
+                  <div className="absolute left-0 w-1 h-5 bg-blue-500 rounded-r-full shadow-[0_0_12px_rgba(59,130,246,0.5)]" />
+                )}
+                
                 <Icon
-                  size={19}
+                  size={18}
                   className={`
-                    transition-colors duration-200
-                    ${isActive ? "text-blue-400" : "text-slate-500 group-hover:text-slate-300"}
+                    transition-all duration-300
+                    ${isActive ? "text-blue-400 scale-110" : "text-slate-500 group-hover:text-slate-300"}
                   `}
                 />
-                {item.label}
+                <span className={isActive ? "font-semibold" : "font-medium"}>
+                  {item.label}
+                </span>
+                
                 {isActive && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 shadow-sm shadow-blue-400/50" />
+                  <div className="ml-auto w-1 h-1 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
                 )}
               </Link>
             );
@@ -131,12 +141,17 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-800/50">
-          <div className="px-3 py-2.5 rounded-xl bg-slate-800/40 border border-slate-700/30">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600">
-              Sistema de Gestão
-            </p>
-            <p className="text-xs text-slate-400 mt-0.5">v1.0.0</p>
+        <div className="p-5 border-t border-slate-800/50 bg-slate-900/20">
+          <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800/30 border border-slate-700/30 shadow-inner">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/10">
+              <LayoutDashboard size={14} className="text-blue-400" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                Sistema v1.0
+              </p>
+              <p className="text-[9px] text-blue-400/60 font-medium">Online & Sincronizado</p>
+            </div>
           </div>
         </div>
       </aside>

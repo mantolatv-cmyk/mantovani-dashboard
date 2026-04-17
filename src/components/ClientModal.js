@@ -58,139 +58,152 @@ export default function ClientModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-[#05070a]/80 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative w-full max-w-2xl my-auto rounded-2xl bg-slate-900 border border-slate-800/50 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95" id="client-modal">
+      <div className="relative w-full max-w-2xl my-auto rounded-[2.5rem] bg-[#0f172a] border border-slate-800/60 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95" id="client-modal">
+        {/* Background Decorative Glow */}
+        <div className="absolute -top-24 -left-24 w-64 h-64 bg-blue-600/10 blur-[80px] rounded-full pointer-events-none" />
+
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-800/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-              <UserPlus size={20} className="text-blue-400" />
+        <div className="relative flex items-center justify-between p-8 border-b border-slate-800/60">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <UserPlus size={24} className="text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Novo Cliente</h2>
-              <p className="text-xs text-slate-500">Cadastre um cliente de forma independente</p>
+              <h2 className="text-xl font-black text-white tracking-tight">Novo Cliente</h2>
+              <p className="text-xs text-slate-500 font-medium uppercase tracking-widest mt-0.5">Gestão de Patrimônio Mantovani</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-500 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-2.5 rounded-xl text-slate-500 hover:text-white hover:bg-slate-800/80 transition-all border border-transparent hover:border-slate-700/50"
           >
-            <X size={20} />
+            <X size={22} />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <form onSubmit={handleSubmit} className="relative p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Nome */}
-            <div className="md:col-span-2 space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Nome Completo / Empresa *
+            <div className="md:col-span-2 space-y-2.5">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">
+                Nome Completo ou Razão Social
               </label>
-              <div className="relative">
-                <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                  <User size={18} className="text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                </div>
                 <input
                   type="text"
                   name="nome"
                   required
                   value={form.nome}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-all font-medium"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-900/50 border border-slate-800/60 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all font-bold shadow-inner"
                   placeholder="Ex: Construtora Silva LTDA"
                 />
               </div>
             </div>
 
             {/* CPF/CNPJ */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <div className="space-y-2.5">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">
                 CPF ou CNPJ
               </label>
-              <div className="relative">
-                <CreditCard size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                  <CreditCard size={18} className="text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                </div>
                 <input
                   type="text"
                   name="cpf"
                   value={form.cpf}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all font-medium"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-900/50 border border-slate-800/60 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all font-bold shadow-inner"
                   placeholder="000.000.000-00"
                 />
               </div>
             </div>
 
             {/* Telefone */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Telefone / WhatsApp
+            <div className="space-y-2.5">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">
+                WhatsApp de Contato
               </label>
-              <div className="relative">
-                <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                  <Phone size={18} className="text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                </div>
                 <input
                   type="text"
                   name="telefone"
                   value={form.telefone}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all font-medium"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-900/50 border border-slate-800/60 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all font-bold shadow-inner"
                   placeholder="(11) 90000-0000"
                 />
               </div>
             </div>
 
             {/* Email */}
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                E-mail
+            <div className="space-y-2.5 md:col-span-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">
+                E-mail para Faturamento
               </label>
-              <div className="relative">
-                <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                  <Mail size={18} className="text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                </div>
                 <input
                   type="email"
                   name="email"
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all font-medium"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-900/50 border border-slate-800/60 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all font-bold shadow-inner"
                   placeholder="contato@empresa.com.br"
                 />
               </div>
             </div>
 
             {/* Endereço */}
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Endereço Completo
+            <div className="space-y-2.5 md:col-span-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">
+                Endereço de Entrega
               </label>
-              <div className="relative">
-                <MapPin size={18} className="absolute left-3 top-[14px] text-slate-500" />
+              <div className="relative group">
+                <div className="absolute top-4 left-4 pointer-events-none">
+                  <MapPin size={18} className="text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                </div>
                 <textarea
                   name="endereco"
                   rows={2}
                   value={form.endereco}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all font-medium resize-none shadow-inner"
-                  placeholder="Rua Exemplo, 123 - Bairro Novo, Cidade/SP - CEP: 00000-000"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-900/50 border border-slate-800/60 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 transition-all font-bold resize-none shadow-inner"
+                  placeholder="Rua Exemplo, 123 - Bairro Novo, Cidade/SP"
                 />
               </div>
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-800/50">
+          <div className="flex items-center justify-end gap-4 mt-10 pt-8 border-t border-slate-800/60">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent transition-all"
+              className="px-6 py-3 rounded-2xl text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-white hover:bg-slate-800 transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+              className="flex items-center gap-3 px-8 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
             >
-              {saving && <Loader2 size={16} className="animate-spin" />}
-              {saving ? "Salvando..." : "Salvar Cliente"}
+              {saving && <Loader2 size={18} className="animate-spin" />}
+              {saving ? "Processando..." : "Confirmar Cadastro"}
             </button>
           </div>
         </form>
