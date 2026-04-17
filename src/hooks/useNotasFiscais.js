@@ -59,8 +59,12 @@ export function useNotasFiscais() {
             throw new Error("O servidor não retornou o link do arquivo após o upload.");
           }
         } catch (uploadObjErr) {
-          console.error("Erro no upload da Nota Fiscal:", uploadObjErr);
-          throw new Error("Falha ao enviar o arquivo para o servidor. Tente novamente com um arquivo menor ou verifique sua conexão.");
+          console.error("Erro detalhado no upload:", uploadObjErr);
+          const detail = uploadObjErr.message || "Erro desconhecido";
+          if (detail.includes("Timeout")) {
+            throw new Error("O upload demorou muito tempo. Tente um arquivo menor.");
+          }
+          throw new Error(`Falha no servidor: ${detail}. Verifique o tamanho do arquivo ou as permissões do Firebase Storage.`);
         }
       }
       
