@@ -161,17 +161,34 @@ export default function ClientList({ rentals, dbClients, loading }) {
                     Último aluguel: <span className="text-slate-300">{formatDate(client.ultimoAluguel)}</span>
                   </span>
                 </div>
-                <button
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors text-xs font-semibold"
-                  onClick={() => {
-                    // Copiar para a área de transferência seria útil aqui, ou no futuro expandir
-                    navigator.clipboard.writeText(`${client.nome} - Tel: ${client.telefone}`);
-                  }}
-                  title="Copiar contato resumido"
-                >
-                  <FileText size={12} />
-                  Copiar
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors text-xs font-semibold"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${client.nome} - Tel: ${client.telefone}`);
+                    }}
+                    title="Copiar contato resumido"
+                  >
+                    <FileText size={12} />
+                    Copiar
+                  </button>
+                  <button
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 transition-colors text-xs font-semibold"
+                    onClick={() => {
+                      const params = new URLSearchParams({
+                        nome: client.nome || "",
+                        cpf: client.cpf || "",
+                        email: client.email || "",
+                        telefone: client.telefone || "",
+                        endereco: client.endereco || "",
+                      });
+                      window.location.href = `/nova-locacao?${params.toString()}`;
+                    }}
+                    title="Preencher Dados em Nova Locação"
+                  >
+                    Nova Locação
+                  </button>
+                </div>
               </div>
             </div>
           ))}

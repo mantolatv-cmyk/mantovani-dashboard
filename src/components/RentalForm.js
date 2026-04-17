@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   User,
   Mail,
@@ -43,8 +43,25 @@ export default function RentalForm() {
   const { addToast } = useToast();
   const isDemo = !isFirebaseConfigured();
 
+  // Pré-preenche o formulário se houver parâmetros na URL (vindo da tela de Clientes)
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.search) {
+      const params = new URLSearchParams(window.location.search);
+      const nome = params.get("nome");
+      if (nome) {
+        setForm((prev) => ({
+          ...prev,
+          clienteNome: nome || prev.clienteNome,
+          clienteCpf: params.get("cpf") || prev.clienteCpf,
+          clienteEmail: params.get("email") || prev.clienteEmail,
+          clienteTelefone: params.get("telefone") || prev.clienteTelefone,
+          clienteEndereco: params.get("endereco") || prev.clienteEndereco,
+        }));
+      }
+    }
+  }, []);
+
   // Mapeia clientes únicos baseados no histórico de locações
-  const clientesUnicos = useMemo(() => {
     if (!rentals) return [];
     const map = new Map();
     rentals.forEach((r) => {
