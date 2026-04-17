@@ -1,25 +1,42 @@
 "use client";
 
 import { useRentals } from "@/hooks/useRentals";
+import { useClients } from "@/hooks/useClients";
 import ClientList from "@/components/ClientList";
+import ClientModal from "@/components/ClientModal";
+import { useState } from "react";
 
 export default function ClientesPage() {
-  // Puxa as locações (sem filtro de status, para pegar todo mundo que já alugou alguma vez)
-  const { rentals, loading, error } = useRentals(null);
+  const { rentals, loading: loadingRentals, error: errorRentals } = useRentals(null);
+  const { dbClients, loading: loadingClients, error: errorClients } = useClients();
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const loading = loadingRentals || loadingClients;
+  const error = errorRentals || errorClients;
 
   return (
     <div className="page-enter space-y-6">
       {/* Header */}
-      <div>
-        <h1
-          className="text-2xl font-bold text-white tracking-tight"
-          id="page-title"
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1
+            className="text-2xl font-bold text-white tracking-tight"
+            id="page-title"
+          >
+            Clientes Cadastrados
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Gestão de clientes independentes e clientes do histórico de locação.
+          </p>
+        </div>
+        
+        <button
+          onClick={() => setModalOpen(true)}
+          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all active:scale-95"
         >
-          Clientes Cadastrados
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Lista de todos os clientes extraída dos registros de locação.
-        </p>
+          <span className="text-lg leading-none mb-0.5">+</span>
+          Novo Cliente
+        </button>
       </div>
 
       {error && (
@@ -29,7 +46,14 @@ export default function ClientesPage() {
       )}
 
       {/* Client List */}
-      <ClientList rentals={rentals} loading={loading} />
+      <ClientList rentals={rentals} dbClients={dbClients} loading={loading} />
+
+      {/* Modal Novo Cliente */}
+      <ClientModal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        onSuccess={() => setModalOpen(false)} 
+      />
     </div>
   );
 }

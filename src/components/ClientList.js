@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Search, User, Mail, Phone, MapPin, Calendar, FileText } from "lucide-react";
 
-export default function ClientList({ rentals, loading }) {
+export default function ClientList({ rentals, dbClients, loading }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   if (loading) {
@@ -14,17 +14,36 @@ export default function ClientList({ rentals, loading }) {
     );
   }
 
-  // Extract unique clients from rentals (latest rental overwrites older ones to keep contact info updated)
   const clientsMap = new Map();
-  // Reverse the array so newer rentals (which appear first in useRentals) take precedence
-  const sortedRentals = [...rentals].reverse(); 
+
+  // 1. Inserir primeiro clientes explícitos do banco
+  if (dbClients && dbClients.length > 0) {
+    dbClients.forEach((client) => {
+      // Se tiver CPF usamos como chave, caso contrário, pelo nome.
+      const key = client.cpf || client.nome;
+      if (key) {
+        clientsMap.set(key, { ...client, isExplicit: true, totalLocacoes: 0 });
+      }
+    });
+  }
+
+  // 2. Extrair clientes dos rentals (atualizando totalLocacoes e ultimoAluguel)
+  const sortedRentals = rentals ? [...rentals].reverse() : []; 
   
   sortedRentals.forEach((rental) => {
-    if (rental.cliente && rental.cliente.cpf) {
-      clientsMap.set(rental.cliente.cpf, {
-        ...rental.cliente,
+    if (rental.cliente && (rental.cliente.cpf || rental.cliente.nome)) {
+      const key = rental.cliente.cpf || rental.cliente.nome;
+      const existing = clientsMap.get(key) || { ...rental.cliente, totalLocacoes: 0 };
+      
+      clientsMap.set(key, {
+        ...existing,
+        // Atualizamos os dados cadastrais pelo rental (mais recente)
+        nome: rental.cliente.nome || existing.nome,
+        telefone: rental.cliente.telefone || existing.telefone,
+        email: rental.cliente.email || existing.email,
+        endereco: rental.cliente.endereco || existing.endereco,
         ultimoAluguel: rental.dataInicio,
-        totalLocacoes: (clientsMap.get(rental.cliente.cpf)?.totalLocacoes || 0) + 1,
+        totalLocacoes: existing.totalLocacoes + 1,
       });
     }
   });
@@ -88,7 +107,7 @@ export default function ClientList({ rentals, loading }) {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {filtered.map((client) => (
             <div
-              key={client.cpf}
+              key={client.cpf || client.nome}
               className="rounded-2xl bg-gradient-to-br from-slate-900/60 to-slate-900/30 backdrop-blur-sm border border-slate-700/40 p-5 hover:shadow-lg hover:border-blue-500/30 transition-all duration-300"
             >
               {/* Header */}

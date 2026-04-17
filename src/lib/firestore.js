@@ -134,6 +134,22 @@ export async function createRental(rentalData) {
   return rentalId;
 }
 
+// ========================
+// CLIENTES (Independentes)
+// ========================
+
+export async function addCliente(clienteData) {
+  const docRef = await addDoc(collection(db, "clientes"), {
+    nome: clienteData.nome || "",
+    cpf: clienteData.cpf || "",
+    email: clienteData.email || "",
+    telefone: clienteData.telefone || "",
+    endereco: clienteData.endereco || "",
+    criadoEm: serverTimestamp(),
+  });
+  return { id: docRef.id, ...clienteData };
+}
+
 /**
  * Registra devolução: encerra locação + restaura estoque atomicamente.
  */
