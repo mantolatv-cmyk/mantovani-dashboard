@@ -49,11 +49,8 @@ export function useNotasFiscais() {
       let arquivoUrl = "";
       if (fileBlob) {
         try {
-          // Aumentado para 60 segundos para suportar arquivos maiores/conexões lentas
-          arquivoUrl = await Promise.race([
-            uploadNotaFiscal(data.clienteNome, fileBlob),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout_Upload")), 60000))
-          ]);
+          // Removido o timeout artificial para deixar o Firebase retornar o erro real (Permissão, CORS, etc)
+          arquivoUrl = await uploadNotaFiscal(data.clienteNome, fileBlob);
           
           if (!arquivoUrl) {
             throw new Error("O servidor não retornou o link do arquivo após o upload.");
@@ -61,10 +58,7 @@ export function useNotasFiscais() {
         } catch (uploadObjErr) {
           console.error("Erro detalhado no upload:", uploadObjErr);
           const detail = uploadObjErr.message || "Erro desconhecido";
-          if (detail.includes("Timeout")) {
-            throw new Error("O upload demorou muito tempo. Tente um arquivo menor.");
-          }
-          throw new Error(`Falha no servidor: ${detail}. Verifique o tamanho do arquivo ou as permissões do Firebase Storage.`);
+          throw new Error(`Falha no servidor: ${detail}. Verifique as permissões do Firebase Storage.`);
         }
       }
       
