@@ -20,12 +20,19 @@ export default function LoginPage() {
       await login(email, password);
       addToast("Bem-vindo de volta!", "success");
     } catch (error) {
-      let message = "Erro ao fazer login. Verifique suas credenciais.";
-      if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+      console.error("Erro de Autenticação:", error);
+      let message = `Erro: ${error.code || "Acesso negado"}`;
+      
+      if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
         message = "E-mail ou senha incorretos.";
       } else if (error.code === "auth/invalid-email") {
         message = "E-mail inválido.";
+      } else if (error.code === "auth/network-request-failed") {
+        message = "Falha na conexão. Verifique sua internet.";
+      } else if (error.code === "auth/unauthorized-domain") {
+        message = "Domínio não autorizado no Firebase.";
       }
+      
       addToast(message, "error");
     } finally {
       setLoading(false);
