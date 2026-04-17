@@ -40,9 +40,21 @@ export async function addEquipment(data) {
 
 export async function updateEquipment(id, data) {
   const docRef = doc(db, "equipamentos", id);
-  await updateDoc(docRef, {
-    nome: data.nome,
-    totalComprado: Number(data.totalComprado),
+
+  await runTransaction(db, async (transaction) => {
+    const docSnap = await transaction.get(docRef);
+    if (!docSnap.exists()) throw new Error("Equipamento não encontrado.");
+
+    const oldData = docSnap.data();
+    const oldTotal = Number(oldData.totalComprado) || 0;
+    const newTotal = Number(data.totalComprado);
+    const diff = newTotal - oldTotal;
+
+    transaction.update(docRef, {
+      nome: data.nome,
+      totalComprado: newTotal,
+      disponivel: (Number(oldData.disponivel) || 0) + diff,
+    });
   });
 }
 
