@@ -62,6 +62,7 @@ export default function RentalForm() {
   }, []);
 
   // Mapeia clientes únicos baseados no histórico de locações
+  const clientesUnicos = useMemo(() => {
     if (!rentals) return [];
     const map = new Map();
     rentals.forEach((r) => {
