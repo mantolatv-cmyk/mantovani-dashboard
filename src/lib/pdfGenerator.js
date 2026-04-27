@@ -114,14 +114,14 @@ export async function generateContractPDF(data) {
 
     const docDefinition = {
       pageSize: "A4",
-      pageMargins: [50, 40, 50, 60],
+      pageMargins: [40, 30, 40, 30],
       content: [
         logoBase64 
-          ? { image: logoBase64, width: 120, alignment: "center", margin: [0, 0, 0, 10] }
+          ? { image: logoBase64, width: 100, alignment: "center", margin: [0, 0, 0, 5] }
           : { text: "BETONEIRAS MANTOVANI", style: "logo", alignment: "center" },
         
-        { text: "Equipamentos para Construção Civil", style: "subtitle", alignment: "center", margin: [0, 0, 0, 20] },
-        { text: "CONTRATO DE LOCAÇÃO", style: "mainTitle", alignment: "center", margin: [0, 0, 0, 25] },
+        { text: "Equipamentos para Construção Civil", style: "subtitle", alignment: "center", margin: [0, 0, 0, 10] },
+        { text: "CONTRATO DE LOCAÇÃO", style: "mainTitle", alignment: "center", margin: [0, 0, 0, 15] },
         
         {
           columns: [
@@ -146,22 +146,22 @@ export async function generateContractPDF(data) {
               style: "bodyText"
             }
           ],
-          margin: [0, 0, 0, 20]
+          margin: [0, 0, 0, 10]
         },
 
-        { text: "Pelo presente instrumento particular, as partes acima qualificadas celebram entre si o presente Contrato de Locação de Equipamentos, que se regerá pelas cláusulas e condições a seguir:", style: "bodyText", margin: [0, 0, 0, 20] },
+        { text: "Pelo presente instrumento particular, as partes acima qualificadas celebram entre si o presente Contrato de Locação de Equipamentos, que se regerá pelas cláusulas e condições a seguir:", style: "bodyText", margin: [0, 0, 0, 10] },
 
         { text: "CLÁUSULA PRIMEIRA – DO OBJETO", style: "sectionTitle" },
         { text: "1.1. O objeto do presente contrato é a locação, pela LOCADORA ao(à) LOCATÁRIO(A), do(s) seguinte(s) equipamento(s) de construção:", style: "bodyText" },
-        { text: `Relação de Equipamento(s): ${equipamentoTexto}`, style: "bodyText", margin: [0, 5, 0, 15] },
+        { text: `Relação de Equipamento(s): ${equipamentoTexto}`, style: "bodyText", margin: [0, 2, 0, 8] },
 
         { text: "CLÁUSULA SEGUNDA – DO PRAZO E CONDIÇÕES DE LOCAÇÃO", style: "sectionTitle" },
-        { text: `2.1. O prazo de locação do(s) equipamento(s) descrito(s) na Cláusula Primeira terá início na data ${formatDate(data.dataInicio)} e término na data ${formatDate(data.dataFim)}.`, style: "bodyText", margin: [0, 0, 0, 8] },
-        { text: "2.2. A devolução do equipamento após a data estipulada acarretará em cobrança de diárias adicionais proporcionais, além de possível multa por atraso no importe estipulado pela política da empresa.", style: "bodyText", margin: [0, 0, 0, 15] },
+        { text: `2.1. O prazo de locação do(s) equipamento(s) descrito(s) na Cláusula Primeira terá início na data ${formatDate(data.dataInicio)} e término na data ${formatDate(data.dataFim)}.`, style: "bodyText", margin: [0, 0, 0, 5] },
+        { text: "2.2. A devolução do equipamento após a data estipulada acarretará em cobrança de diárias adicionais proporcionais, além de possível multa por atraso no importe estipulado pela política da empresa.", style: "bodyText", margin: [0, 0, 0, 8] },
 
         { text: "CLÁUSULA TERCEIRA – DO VALOR E FORMA DE PAGAMENTO", style: "sectionTitle" },
-        { text: `3.1. Pela locação do(s) equipamento(s), o(a) LOCATÁRIO(A) pagará à LOCADORA o valor total de ${formatCurrency(data.valorTotal)}.`, style: "bodyText", margin: [0, 0, 0, 8] },
-        { text: "3.2. O pagamento será efetuado através de [Inserir forma de pagamento padrão], na data de assinatura deste contrato ou no ato da retirada do equipamento.", style: "bodyText", margin: [0, 0, 0, 15] },
+        { text: `3.1. Pela locação do(s) equipamento(s), o(a) LOCATÁRIO(A) pagará à LOCADORA o valor total de ${formatCurrency(data.valorTotal)}.`, style: "bodyText", margin: [0, 0, 0, 5] },
+        { text: "3.2. O pagamento será efetuado através de [Inserir forma de pagamento padrão], na data de assinatura deste contrato ou no ato da retirada do equipamento.", style: "bodyText", margin: [0, 0, 0, 8] },
 
         { text: "CLÁUSULA QUARTA – DAS OBRIGAÇÕES E RESPONSABILIDADES", style: "sectionTitle" },
         { text: "4.1. Da LOCADORA: Entregar o equipamento em perfeitas condições de uso, funcionamento e segurança, realizando testes prévios na presença do(a) LOCATÁRIO(A) ou de seu representante autorizado.", style: "bodyText", margin: [0, 0, 0, 8] },
@@ -174,10 +174,10 @@ export async function generateContractPDF(data) {
             "Responsabilizar-se integralmente por roubo, furto, perda, incêndio ou danos causados ao equipamento durante o período em que este estiver sob sua posse."
           ],
           style: "bulletPoints",
-          margin: [15, 0, 0, 40]
+          margin: [15, 0, 0, 15]
         },
 
-        { text: `Atibaia - SP, ${getDataHoje()}.`, style: "bodyText", alignment: "center", margin: [0, 0, 0, 40] },
+        { text: `Atibaia - SP, ${getDataHoje()}.`, style: "bodyText", alignment: "center", margin: [0, 10, 0, 20] },
 
         {
           columns: [
@@ -205,15 +205,15 @@ export async function generateContractPDF(data) {
         }
       ],
       styles: {
-        logo: { fontSize: 20, bold: true, color: "#1e3a5f" },
-        subtitle: { fontSize: 12, color: "#475569" },
-        mainTitle: { fontSize: 16, bold: true, decoration: "underline", color: "#000000" },
-        sectionTitle: { fontSize: 11, bold: true, margin: [0, 10, 0, 5], color: "#000000" },
-        bodyText: { fontSize: 10, lineHeight: 1.4, color: "#000000" },
-        bulletPoints: { fontSize: 10, lineHeight: 1.4, color: "#000000" },
-        signatureArea: { fontSize: 10 }
+        logo: { fontSize: 18, bold: true, color: "#1e3a5f" },
+        subtitle: { fontSize: 10, color: "#475569" },
+        mainTitle: { fontSize: 14, bold: true, decoration: "underline", color: "#000000" },
+        sectionTitle: { fontSize: 10, bold: true, margin: [0, 6, 0, 3], color: "#000000" },
+        bodyText: { fontSize: 9, lineHeight: 1.2, color: "#000000" },
+        bulletPoints: { fontSize: 9, lineHeight: 1.2, color: "#000000" },
+        signatureArea: { fontSize: 9 }
       },
-      defaultStyle: { font: "Roboto", fontSize: 10 }
+      defaultStyle: { font: "Roboto", fontSize: 9 }
     };
 
     return new Promise((resolve, reject) => {
