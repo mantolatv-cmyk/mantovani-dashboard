@@ -39,6 +39,9 @@ export function AuthProvider({ children }) {
     }
   }, [user, loading, pathname, router]);
 
+  // DEBUG: Monitoramento do estado de autenticação
+  console.log("AuthProvider State:", { loading, user: user?.email, pathname });
+
   // Determina se devemos mostrar o conteúdo real ou a tela de carregamento/proteção
   const shouldShowContent = !loading && (user || pathname === "/login");
 
