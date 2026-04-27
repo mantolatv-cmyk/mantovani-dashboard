@@ -17,30 +17,40 @@ export function AuthProvider({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Escuta mudanças no estado de autenticação apenas uma vez no mount
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
-
-      // Proteção de rotas simples
-      if (!currentUser && pathname !== "/login") {
-        router.push("/login");
-      }
-      
-      if (currentUser && pathname === "/login") {
-        router.push("/");
-      }
     });
 
     return () => unsubscribe();
-  }, [pathname, router]);
+  }, []);
+
+  useEffect(() => {
+    // Lógica de proteção de rotas reativa ao estado do usuário e URL atual
+    if (loading) return;
+
+    if (!user && pathname !== "/login") {
+      router.push("/login");
+    }
+    
+    if (user && pathname === "/login") {
+      router.push("/");
+    }
+  }, [user, loading, pathname, router]);
+
+  // Determina se devemos mostrar o conteúdo real ou a tela de carregamento/proteção
+  const shouldShowContent = !loading && (user || pathname === "/login");
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
-      {!loading ? children : (
+      {shouldShowContent ? children : (
         <div className="min-h-screen bg-[#05070a] flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-            <p className="text-slate-500 text-sm font-medium animate-pulse">Sincronizando com Mantovani...</p>
+            <p className="text-slate-500 text-sm font-medium animate-pulse">
+              {pathname === "/login" ? "Preparando acesso..." : "Sincronizando com Mantovani..."}
+            </p>
           </div>
         </div>
       )}
