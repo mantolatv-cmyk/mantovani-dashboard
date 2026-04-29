@@ -162,6 +162,18 @@ export async function addCliente(clienteData) {
   return { id: docRef.id, ...clienteData };
 }
 
+export async function updateCliente(id, clienteData) {
+  const docRef = doc(db, "clientes", id);
+  await updateDoc(docRef, {
+    nome: clienteData.nome || "",
+    cpf: clienteData.cpf || "",
+    email: clienteData.email || "",
+    telefone: clienteData.telefone || "",
+    endereco: clienteData.endereco || "",
+    atualizadoEm: serverTimestamp(),
+  });
+}
+
 /**
  * Registra devolução: encerra locação + restaura estoque atomicamente.
  */

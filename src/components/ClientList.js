@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Search, User, Mail, Phone, MapPin, Calendar, FileText, Trash2 } from "lucide-react";
+import { Search, User, Mail, Phone, MapPin, Calendar, FileText, Trash2, Pencil } from "lucide-react";
 
-export default function ClientList({ rentals, dbClients, loading, deleteClient }) {
+export default function ClientList({ rentals, dbClients, loading, deleteClient, onEdit }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   if (loading) {
@@ -203,13 +203,22 @@ export default function ClientList({ rentals, dbClients, loading, deleteClient }
                   </button>
  
                    {client.isExplicit && (
-                    <button
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-all duration-300 text-xs font-bold uppercase tracking-wider active:scale-95"
-                      onClick={() => handleDelete(client)}
-                      title="Excluir Cliente"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/20 transition-all duration-300 text-xs font-bold uppercase tracking-wider active:scale-95"
+                        onClick={() => onEdit(client)}
+                        title="Editar Cliente"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-all duration-300 text-xs font-bold uppercase tracking-wider active:scale-95"
+                        onClick={() => handleDelete(client)}
+                        title="Excluir Cliente"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   )}
  
                    <button

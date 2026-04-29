@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { User, X, Loader2, UserPlus, Mail, Phone, MapPin, CreditCard } from "lucide-react";
-import { addCliente } from "@/lib/firestore";
+import { User, X, Loader2, UserPlus, Mail, Phone, MapPin, CreditCard, Pencil } from "lucide-react";
+import { addCliente, updateCliente } from "@/lib/firestore";
 import { useToast } from "@/components/Toast";
 import { isFirebaseConfigured } from "@/lib/mockData";
 
@@ -14,10 +14,27 @@ const initialForm = {
   endereco: "",
 };
 
-export default function ClientModal({ isOpen, onClose, onSuccess }) {
+export default function ClientModal({ isOpen, onClose, onSuccess, initialData }) {
   const [form, setForm] = useState(initialForm);
   const [saving, setSaving] = useState(false);
   const { addToast } = useToast();
+
+  const isEdit = !!initialData;
+
+  // Preenche o formulário ao editar
+  useEffect(() => {
+    if (initialData && isOpen) {
+      setForm({
+        nome: initialData.nome || "",
+        cpf: initialData.cpf || "",
+        email: initialData.email || "",
+        telefone: initialData.telefone || "",
+        endereco: initialData.endereco || "",
+      });
+    } else if (!isOpen) {
+      setForm(initialForm);
+    }
+  }, [initialData, isOpen]);
 
   const isDemo = !isFirebaseConfigured();
 
@@ -42,13 +59,19 @@ export default function ClientModal({ isOpen, onClose, onSuccess }) {
 
     setSaving(true);
     try {
-      await addCliente(form);
-      addToast(`Cliente "${form.nome}" registrado com sucesso!`, "success");
+      if (isEdit) {
+        await updateCliente(initialData.id, form);
+        addToast(`Cliente "${form.nome}" atualizado com sucesso!`, "success");
+      } else {
+        await addCliente(form);
+        addToast(`Cliente "${form.nome}" registrado com sucesso!`, "success");
+      }
+      
       setForm(initialForm);
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
-      addToast(`Erro ao registrar cliente: ${error.message}`, "error");
+      addToast(`Erro ao salvar cliente: ${error.message}`, "error");
     } finally {
       setSaving(false);
     }
@@ -67,11 +90,13 @@ export default function ClientModal({ isOpen, onClose, onSuccess }) {
         {/* Header */}
         <div className="relative flex items-center justify-between p-8 border-b border-slate-800/60">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <UserPlus size={24} className="text-white" />
+            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${isEdit ? "from-amber-500 to-amber-600 shadow-amber-500/20" : "from-blue-500 to-blue-600 shadow-blue-500/20"} flex items-center justify-center shadow-lg`}>
+              {isEdit ? <Pencil size={24} className="text-white" /> : <UserPlus size={24} className="text-white" />}
             </div>
             <div>
-              <h2 className="text-xl font-black text-white tracking-tight">Novo Cliente</h2>
+              <h2 className="text-xl font-black text-white tracking-tight">
+                {isEdit ? "Editar Cliente" : "Novo Cliente"}
+              </h2>
               <p className="text-xs text-slate-500 font-medium uppercase tracking-widest mt-0.5">Gestão de Patrimônio Mantovani</p>
             </div>
           </div>
@@ -200,10 +225,10 @@ export default function ClientModal({ isOpen, onClose, onSuccess }) {
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-3 px-8 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+              className={`flex items-center gap-3 px-8 py-3 rounded-2xl bg-gradient-to-r ${isEdit ? "from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 shadow-amber-500/20" : "from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 shadow-blue-500/20"} text-white text-sm font-black uppercase tracking-widest shadow-xl transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none`}
             >
               {saving && <Loader2 size={18} className="animate-spin" />}
-              {saving ? "Processando..." : "Confirmar Cadastro"}
+              {saving ? "Processando..." : isEdit ? "Salvar Alterações" : "Confirmar Cadastro"}
             </button>
           </div>
         </form>

@@ -65,5 +65,16 @@ export function useClients() {
     }
   };
 
-  return { dbClients, loading, error, deleteClient };
+  const updateClient = async (id, data) => {
+    try {
+      const { updateCliente } = await import("@/lib/firestore");
+      await updateCliente(id, data);
+      return true;
+    } catch (err) {
+      console.error("Erro ao atualizar cliente:", err);
+      throw err;
+    }
+  };
+
+  return { dbClients, loading, error, deleteClient, updateClient };
 }

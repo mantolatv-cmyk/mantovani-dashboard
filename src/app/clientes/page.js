@@ -10,9 +10,20 @@ export default function ClientesPage() {
   const { rentals, loading: loadingRentals, error: errorRentals } = useRentals(null);
   const { dbClients, loading: loadingClients, error: errorClients, deleteClient } = useClients();
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
 
   const loading = loadingRentals || loadingClients;
   const error = errorRentals || errorClients;
+
+  const handleEdit = (client) => {
+    setSelectedClient(client);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedClient(null);
+    setModalOpen(false);
+  };
 
   return (
     <div className="page-enter space-y-6">
@@ -51,13 +62,15 @@ export default function ClientesPage() {
         dbClients={dbClients} 
         loading={loading} 
         deleteClient={deleteClient}
+        onEdit={handleEdit}
       />
 
-      {/* Modal Novo Cliente */}
+      {/* Modal Novo/Editar Cliente */}
       <ClientModal 
         isOpen={modalOpen} 
-        onClose={() => setModalOpen(false)} 
-        onSuccess={() => setModalOpen(false)} 
+        onClose={handleCloseModal} 
+        onSuccess={handleCloseModal} 
+        initialData={selectedClient}
       />
     </div>
   );
