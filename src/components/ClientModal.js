@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, X, Loader2, UserPlus, Mail, Phone, MapPin, CreditCard, Pencil } from "lucide-react";
 import { addCliente, updateCliente } from "@/lib/firestore";
 import { useToast } from "@/components/Toast";
