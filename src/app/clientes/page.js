@@ -8,7 +8,7 @@ import { useState } from "react";
 
 export default function ClientesPage() {
   const { rentals, loading: loadingRentals, error: errorRentals } = useRentals(null);
-  const { dbClients, loading: loadingClients, error: errorClients } = useClients();
+  const { dbClients, loading: loadingClients, error: errorClients, deleteClient } = useClients();
   const [modalOpen, setModalOpen] = useState(false);
 
   const loading = loadingRentals || loadingClients;
@@ -46,7 +46,12 @@ export default function ClientesPage() {
       )}
 
       {/* Client List */}
-      <ClientList rentals={rentals} dbClients={dbClients} loading={loading} />
+      <ClientList 
+        rentals={rentals} 
+        dbClients={dbClients} 
+        loading={loading} 
+        deleteClient={deleteClient}
+      />
 
       {/* Modal Novo Cliente */}
       <ClientModal 

@@ -53,5 +53,17 @@ export function useClients() {
     };
   }, []);
 
-  return { dbClients, loading, error };
+  const deleteClient = async (id) => {
+    try {
+      const { db } = await import("@/lib/firebase");
+      const { doc, deleteDoc } = await import("firebase/firestore");
+      await deleteDoc(doc(db, "clientes", id));
+      return true;
+    } catch (err) {
+      console.error("Erro ao deletar cliente:", err);
+      throw err;
+    }
+  };
+
+  return { dbClients, loading, error, deleteClient };
 }

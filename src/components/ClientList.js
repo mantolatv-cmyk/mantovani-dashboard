@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Search, User, Mail, Phone, MapPin, Calendar, FileText } from "lucide-react";
+import { Search, User, Mail, Phone, MapPin, Calendar, FileText, Trash2 } from "lucide-react";
 
-export default function ClientList({ rentals, dbClients, loading }) {
+export default function ClientList({ rentals, dbClients, loading, deleteClient }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   if (loading) {
@@ -69,6 +69,18 @@ export default function ClientList({ rentals, dbClients, loading }) {
     if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
     return dateStr;
   }
+
+  const handleDelete = async (client) => {
+    if (!client.id) return;
+    
+    if (window.confirm(`Tem certeza que deseja excluir o registro de "${client.nome}"?`)) {
+      try {
+        await deleteClient(client.id);
+      } catch (err) {
+        alert("Erro ao excluir cliente: " + err.message);
+      }
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-500" id="client-list">
@@ -189,7 +201,18 @@ export default function ClientList({ rentals, dbClients, loading }) {
                     <FileText size={14} />
                     Copiar
                   </button>
-                  <button
+ 
+                   {client.isExplicit && (
+                    <button
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-all duration-300 text-xs font-bold uppercase tracking-wider active:scale-95"
+                      onClick={() => handleDelete(client)}
+                      title="Excluir Cliente"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+ 
+                   <button
                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600 shadow-lg shadow-blue-500/20 transition-all duration-300 text-xs font-bold uppercase tracking-wider active:scale-95"
                     onClick={() => {
                       const params = new URLSearchParams({
